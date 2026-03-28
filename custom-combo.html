@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUSTOM COMBO SELECTION</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --brand-gold: #ffb400;
+            --maze-green: #008a45;
+            --deep-black: #000000;
+            --border-gray: #333;
+            --card-bg: #0a0a0a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--deep-black); color: #fff; padding: 15px 15px 120px; }
+
+        .header-box { border: 2.5px solid #ff4e00; color: #ff4e00; text-align: center; padding: 12px; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
+
+        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; color: #bbb; }
+
+        .dropdown-container { position: relative; width: 100%; }
+        .dropdown-selected {
+            width: 100%; padding: 12px 15px; border: 1.5px solid var(--border-gray);
+            border-radius: 10px; background: var(--card-bg); font-size: 14px; color: #fff;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .dropdown-options {
+            position: absolute; top: 110%; left: 0; width: 100%; background: #111;
+            border: 1px solid var(--border-gray); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none; z-index: 100;
+        }
+        .option-item { padding: 12px 15px; font-size: 14px; cursor: pointer; border-bottom: 1px solid #222; color: #ccc; }
+        .option-item:hover { background: #222; color: var(--brand-gold); }
+
+        .status-txt { font-size: 14px; font-weight: 700; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .slots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .slot {
+            aspect-ratio: 1/1.1; border: 1.5px solid var(--border-gray); border-radius: 15px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; position: relative; overflow: hidden; background: #050505; transition: 0.3s;
+        }
+        .slot.filled { border-color: var(--brand-gold); box-shadow: 0 0 15px rgba(255, 180, 0, 0.1); }
+        .slot img { width: 100%; height: 100%; object-fit: contain; }
+        .slot .item-name { position: absolute; bottom: 0; background: rgba(255, 180, 0, 0.95); color: #000; width: 100%; font-size: 10px; text-align: center; padding: 5px; font-weight: 800; }
+
+        /* Summary List Style */
+        .selection-summary { background: #111; border: 1px solid var(--border-gray); border-radius: 12px; padding: 15px; margin-bottom: 25px; }
+        .summary-item { display: flex; justify-content: space-between; font-size: 13px; color: #ccc; margin-bottom: 8px; border-bottom: 1px dashed #222; padding-bottom: 4px; }
+        .summary-item:last-child { border: none; }
+
+        /* Toast Style */
+        .toast { position: fixed; top: 20px; right: 20px; background: var(--brand-gold); color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; transform: translateX(200%); transition: 0.5s; z-index: 10000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .toast.show { transform: translateX(0); }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: flex-end; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--deep-black); width: 100%; height: 85vh; border-radius: 25px 25px 0 0; padding: 20px; overflow-y: auto; border-top: 2px solid var(--brand-gold); }
+        .search-container { position: sticky; top: -1px; background: var(--deep-black); z-index: 20; padding-bottom: 15px; }
+        .search-bar { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1.5px solid var(--border-gray); background: #111; color: #fff; outline: none; }
+        
+        .perfume-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .perfume-card { border: 1px solid var(--border-gray); border-radius: 15px; padding: 12px; text-align: center; background: var(--card-bg); transition: 0.3s; }
+        .perfume-card h4 { font-size: 12px; margin: 8px 0; color: #eee; height: 34px; overflow: hidden; }
+        .card-price { display: block; color: var(--brand-gold); font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+        .btn-select { width: 100%; background: #2962ff; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .price-section { text-align: center; margin: 30px 0; border-top: 1px solid var(--border-gray); padding-top: 25px; }
+        .price-value { font-size: 42px; font-weight: 900; color: var(--brand-gold); letter-spacing: -1px; }
+        .discount-msg { font-size: 13px; color: #00ff88; font-weight: bold; margin-top: -5px; display: none; }
+
+        .btn-buy { 
+            width: 100%; padding: 20px; border-radius: 12px; border: none; font-weight: 900; 
+            text-transform: uppercase; cursor: pointer; background: #333; color: #666; 
+            pointer-events: none; transition: 0.4s; font-size: 16px; 
+            display: block; text-align: center; text-decoration: none;
+        }
+        .btn-buy.active { background: #fff; color: #000; pointer-events: auto; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+
+        #loadingOverlay { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); 
+        }
+        .premium-loader { width: 80px; height: 80px; border: 3px solid transparent; border-top-color: var(--brand-gold); border-bottom-color: var(--brand-gold); border-radius: 50%; animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body onclick="closeAllDropdowns()">
+
+    <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+    <div id="toast" class="toast">Scent Added!</div>
+
+    <div id="loadingOverlay">
+        <div class="premium-loader"></div>
+        <p style="margin-top: 25px; font-weight: 800; color: var(--brand-gold); letter-spacing: 3px; font-size: 12px;">PREPARING YOUR COMBO...</p>
+    </div>
+
+    <div class="header-box">CUSTOM COMBO SELECTION</div>
+
+    <div class="config-grid">
+        <div>
+            <span class="label">Category</span>
+            <div class="dropdown-container">
+                <div class="dropdown-selected" onclick="toggleDropdown(event, 'catDrop')"><span id="catVal">Perfume Oil</span> <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="dropdown-options" id="catDrop">
+                    <div class="option-item" onclick="selectOption('catVal', 'Perfume Oil')">Perfume Oil</div>
+                    <div class="option-item" onclick="selectOption('catVal', 'Attar')">Attar</div>
+                </div>
+            </div> 
+        </div>
+        <div>
+            <span class="label">Combo Size</span>
+            <div class="dropdown-container">
+                <div class="dropdown-selected" onclick="toggleDropdown(event, 'sizeDrop')"><span id="sizeVal">3 Products</span> <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="dropdown-options" id="sizeDrop">
+                    <div class="option-item" onclick="updateSize(2)">2 Products (5% Off)</div>
+                    <div class="option-item" onclick="updateSize(3)">3 Products (10% Off)</div>
+                    <div class="option-item" onclick="updateSize(4)">4 Products (15% Off)</div>
+                    <div class="option-item" onclick="updateSize(5)">5 Products (20% Off)</div>
+                </div>
+            </div>
+        </div>
+        <div style="grid-column: span 2;">
+            <span class="label">Size Variant</span>
+            <div class="dropdown-container">
+                <div class="dropdown-selected" onclick="toggleDropdown(event, 'varDrop')"><span id="varVal">6 ml</span> <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="dropdown-options" id="varDrop">
+                    <div class="option-item" onclick="updateVariant('6 ml', 350)">6 ml - ৳350</div>
+                    <div class="option-item" onclick="updateVariant('12 ml', 650)">12 ml - ৳650</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="status-txt" id="statusTxt">Add Scents (0/3)</p>
+    <div class="slots-grid" id="slotsGrid"></div>
+
+    <div class="selection-summary" id="summaryBox" style="display: none;">
+        <span class="label" style="margin-bottom: 12px; color: var(--brand-gold);">Selected Fragrances</span>
+        <div id="summaryList"></div>
+    </div>
+
+    <div class="price-section">
+        <p class="label">Total Amount</p>
+        <p class="price-value">৳ <span id="finalPrice">0</span></p>
+        <p class="discount-msg" id="discountMsg">Discount Applied!</p>
+    </div>
+
+    <a href="javascript:void(0)" class="btn-buy" id="buyBtn" onclick="processOrder()">Confirm & Order Now</a>
+
+    <div class="modal" id="pModal">
+        <div class="modal-content">
+            <div class="search-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="font-size: 16px; color: var(--brand-gold);">Choose Your Scent</h3>
+                    <i class="fa-solid fa-xmark" onclick="closeModal()" style="font-size: 20px; color: #666;"></i>
+                </div>
+                <input type="text" class="search-bar" id="pSearch" placeholder="Search perfume..." onkeyup="filterPerfumes()">
+            </div>
+            <div class="perfume-grid" id="perfumeList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlot = null;
+        let unitPrice = 350;
+        let selectedScents = [];
+        
+        const perfumes = [
+            { name: "Dior Sauvage", img: "https://via.placeholder.com/150/111/ffb400?text=Sauvage" },
+            { name: "Creed Aventus", img: "https://via.placeholder.com/150/111/ffb400?text=Aventus" },
+            { name: "Blue de Chanel", img: "https://via.placeholder.com/150/111/ffb400?text=BDC" },
+            { name: "Hawas for Him", img: "https://via.placeholder.com/150/111/ffb400?text=Hawas" },
+            { name: "Vampire Blood", img: "https://via.placeholder.com/150/111/ffb400?text=Vampire" },
+            { name: "Stronger With You", img: "https://via.placeholder.com/150/111/ffb400?text=SWY" },
+            { name: "Midnight Oud", img: "https://via.placeholder.com/150/111/ffb400?text=Oud" },
+            { name: "Club de Nuit", img: "https://via.placeholder.com/150/111/ffb400?text=CDNIM" }
+        ];
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function toggleDropdown(e, id) { e.stopPropagation(); closeAllDropdowns(); document.getElementById(id).style.display = 'block'; }
+        function closeAllDropdowns() { document.querySelectorAll('.dropdown-options').forEach(d => d.style.display = 'none'); }
+        function selectOption(id, val) { document.getElementById(id).innerText = val; closeAllDropdowns(); }
+        function closeModal() { document.getElementById('pModal').style.display = 'none'; }
+
+        function updateVariant(name, price) {
+            document.getElementById('varVal').innerText = name;
+            unitPrice = price;
+            updateUI();
+        }
+
+        function updateSize(n) {
+            document.getElementById('sizeVal').innerText = n + " Products";
+            const grid = document.getElementById('slotsGrid'); grid.innerHTML = '';
+            selectedScents = new Array(n).fill(null);
+            for(let i=0; i<n; i++) grid.innerHTML += `<div class="slot" data-index="${i}" onclick="openPicker(this)"><i class="fa-solid fa-plus"></i></div>`;
+            updateUI();
+        }
+
+        function openPicker(slot) {
+            currentSlot = slot;
+            renderPerfumes(perfumes);
+            document.getElementById('pModal').style.display = 'flex';
+        }
+
+        function renderPerfumes(list) {
+            const container = document.getElementById('perfumeList');
+            container.innerHTML = list.map(p => `
+                <div class="perfume-card">
+                    <img src="${p.img}">
+                    <h4>${p.name}</h4>
+                    <span class="card-price">৳ ${unitPrice}</span>
+                    <button class="btn-select" onclick="selectPerfume('${p.name}','${p.img}')">Select</button>
+                </div>
+            `).join('');
+        }
+
+        function filterPerfumes() {
+            const term = document.getElementById('pSearch').value.toLowerCase();
+            const filtered = perfumes.filter(p => p.name.toLowerCase().includes(term));
+            renderPerfumes(filtered);
+        }
+
+        function selectPerfume(name, img) {
+            const idx = currentSlot.getAttribute('data-index');
+            selectedScents[idx] = name;
+            
+            const sound = document.getElementById('popSound'); sound.currentTime = 0; sound.play();
+            currentSlot.classList.add('filled');
+            currentSlot.innerHTML = `<img src="${img}"><div class="item-name">${name}</div>`;
+            
+            showToast(`${name} Added!`);
+            closeModal();
+            updateUI();
+        }
+
+        function updateUI() {
+            const filledCount = selectedScents.filter(s => s !== null).length;
+            const total = selectedScents.length;
+            document.getElementById('statusTxt').innerText = `Add Scents (${filledCount}/${total})`;
+            
+            // Update Summary List
+            const summaryBox = document.getElementById('summaryBox');
+            const summaryList = document.getElementById('summaryList');
+            summaryList.innerHTML = selectedScents.map((s, i) => s ? `<div class="summary-item"><span>${i+1}. ${s}</span> <span>৳${unitPrice}</span></div>` : '').join('');
+            summaryBox.style.display = filledCount > 0 ? 'block' : 'none';
+
+            const buyBtn = document.getElementById('buyBtn');
+            const discMsg = document.getElementById('discountMsg');
+
+            if(filledCount === total && total > 0) {
+                let basePrice = total * unitPrice;
+                let autoDiscount = (total === 2) ? 0.05 : (total === 3) ? 0.10 : (total === 4) ? 0.15 : (total >= 5) ? 0.20 : 0;
+
+                let finalPrice = basePrice * (1 - autoDiscount);
+                document.getElementById('finalPrice').innerText = Math.round(finalPrice);
+                
+                discMsg.innerText = `Combo Discount (${autoDiscount * 100}%) Applied!`;
+                discMsg.style.display = autoDiscount > 0 ? 'block' : 'none';
+
+                buyBtn.classList.add('active');
+                buyBtn.style.pointerEvents = "auto";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ffb400', '#ffffff'] });
+            } else {
+                document.getElementById('finalPrice').innerText = "0";
+                discMsg.style.display = 'none';
+                buyBtn.classList.remove('active');
+            }
+        }
+
+        function processOrder() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            setTimeout(() => {
+                const total = document.getElementById('finalPrice').innerText;
+                window.location.href = `checkout.html?total=${total}`;
+            }, 2500);
+        }
+
+        updateSize(3);
+    </script>
+</body>
+</html>

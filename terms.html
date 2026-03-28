@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Terms | Signature Scents BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-black: #000000;
+            --brand-gold: #ffb400;
+            --soft-gold: #d4af37;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 180, 0, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-black);
+            color: #fff;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000 80%);
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Floating Animation */
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .animated-box { animation: floatIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+        .header { text-align: center; margin-bottom: 50px; }
+        .header h1 { 
+            font-size: 1.5rem; 
+            letter-spacing: 3px; 
+            color: var(--brand-gold); 
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .header p { color: #666; font-size: 0.7rem; letter-spacing: 1px; }
+
+        /* --- CONTACT SECTION --- */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .contact-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.4s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .contact-card:active { transform: scale(0.9); border-color: var(--brand-gold); }
+        .contact-card i { font-size: 1.5rem; color: var(--brand-gold); margin-bottom: 10px; display: block; }
+        .contact-card span { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+
+        /* --- TERMS ACCORDION --- */
+        .accordion-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .accordion-header {
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #ddd;
+        }
+
+        .accordion-header i { color: var(--brand-gold); transition: 0.3s; }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .accordion-content p {
+            padding: 0 20px 20px;
+            font-size: 0.8rem;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .active-item { border-color: var(--brand-gold); background: rgba(255, 180, 0, 0.05); }
+        .active-item .accordion-content { max-height: 200px; transition: max-height 0.6s ease-in; }
+        .active-item .header-icon { transform: rotate(180deg); }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.65rem;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--brand-gold);
+            text-decoration: none;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--brand-gold);
+            padding-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container animated-box">
+        <div class="header">
+            <h1>Customer Center</h1>
+            <p>Signature Scents BD | Support & Care</p>
+        </div>
+
+        <div class="contact-grid">
+            <a href="https://wa.me/YOUR_NUMBER" class="contact-card">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </a>
+            <a href="https://m.me/YOUR_PAGE" class="contact-card">
+                <i class="fa-brands fa-facebook-messenger"></i>
+                <span>Messenger</span>
+            </a>
+            <a href="tel:YOUR_NUMBER" class="contact-card">
+                <i class="fa-solid fa-phone-volume"></i>
+                <span>Call Us</span>
+            </a>
+            <a href="mailto:support@email.com" class="contact-card">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Email</span>
+            </a>
+        </div>
+
+        <h2 style="font-size: 1rem; margin-bottom: 20px; color: var(--brand-gold); letter-spacing: 1px;">POLICIES & TERMS</h2>
+
+        <div class="accordion">
+            <div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span>Order & Delivery</span>
+                    <i class="fa-solid fa-chevron-down header-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>ঢাকা সিটির ভেতরে ১-৩ দিন এবং ঢাকার বাইরে ৩-৫ দিনের মধ্যে ডেলিভারি সম্পন্ন করা হয়। ডেলিভারি চার্জ এরিয়া অনুযায়ী নির্ধারিত।</p>
+                </div>
+            </div>
+
+            <div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span>Return & Refund</span>
+                    <i class="fa-solid fa-chevron-down header-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>প্যাকেট খোলার পর বা পারফিউম ব্যবহারের পর কোনো রিটার্ন গ্রহণ করা হয় না। তবে ভুল বা ড্যামেজ প্রোডাক্ট পেলে তাৎক্ষণিক আমাদের জানান।</p>
+                </div>
+            </div>
+
+            <div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span>Product Authenticity</span>
+                    <i class="fa-solid fa-chevron-down header-icon"></i>
+                </div> 
+                <div class="accordion-content">
+                    <p>আমাদের প্রতিটি পারফিউম উন্নত মানের ফ্রেঞ্চ গ্রেড অয়েল দ্বারা তৈরি। আমরা "Inspired" কালেকশনে সর্বোচ্চ কোয়ালিটি নিশ্চিত করি।</p>
+                </div>
+            </div>
+
+            <div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span>Payment Methods</span>
+                    <i class="fa-solid fa-chevron-down header-icon"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>আমরা ক্যাশ অন ডেলিভারি (COD) এবং বিকাশ/নগদ পেমেন্ট গ্রহণ করি। নিরাপদ শপিং-এর জন্য আমরা কোনো কার্ড ইনফরমেশন সেভ করি না।</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="index.html" class="back-home">Back to Boutique</a>
+            <p class="footer-note">© 2026 SIGNATURE SCENTS BD — PREMIUM CRAFTSMANSHIP</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(element) {
+            // Close other items
+            const items = document.querySelectorAll('.accordion-item');
+            items.forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('active-item');
+                }
+            });
+            // Toggle current item
+            element.classList.toggle('active-item');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Signature Scents BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
+    <style>
+        :root { --bg: #000; --gold: #ffb400; --surface: #0d0d0d; --border: #222; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 25px; }
+        header h1 { color: var(--gold); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Stats Section */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 25px; }
+        .stat-card { background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        .stat-card h3 { color: var(--gold); margin: 5px 0; font-size: 1.4rem; }
+        .stat-card p { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+
+        /* Order Table */
+        .order-list { background: var(--surface); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
+        .table-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 12px; font-size: 0.75rem; color: #555; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid #111; font-size: 0.9rem; }
+
+        /* Controls */
+        select { background: #000; color: var(--gold); border: 1px solid var(--gold); padding: 6px; border-radius: 6px; cursor: pointer; }
+        .btn-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 1rem; }
+        
+        /* Responsive */
+        @media (max-width: 600px) { td { font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Signature Scents BD Admin</h1>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+            <div class="stat-card"><h3 id="pendingOrders">0</h3><p>Pending</p></div>
+            <div class="stat-card"><h3 id="totalRevenue">৳0</h3><p>Revenue</p></div>
+        </div>
+
+        <div class="order-list">
+            <div class="table-header">
+                <h2 style="font-size: 1rem; color: #eee;">Active Orders</h2>
+                <button onclick="fetchOrders()" style="background:none; border:none; color:var(--gold); cursor:pointer;"><i class="fa-solid fa-sync"></i> Refresh</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ৩. Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAf1OrMuwbGJRDByY8LFi1fwlXZsfawwRI",
+            databaseURL: "https://signature-scents-bd-fa4f9-default-rtdb.firebaseio.com",
+            projectId: "signature-scents-bd-fa4f9",
+            storageBucket: "signature-scents-bd-fa4f9.firebasestorage.app",
+            appId: "1:690465209021:web:a5bbde32d6360aeed515d4"
+        }; 
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Orders Fetch করার ফাংশন
+        function fetchOrders() {
+            db.ref('orders').on('value', (snapshot) => {
+                const orders = snapshot.val();
+                const orderBody = document.getElementById('orderBody');
+                orderBody.innerHTML = "";
+                
+                let count = 0, pending = 0, revenue = 0;
+
+                if (orders) {
+                    Object.keys(orders).reverse().forEach(key => {
+                        const order = orders[key];
+                        count++;
+                        if(order.status === "Pending") pending++;
+                        if(order.status === "Delivered") revenue += (order.total || 0);
+
+                        orderBody.innerHTML += `
+                            <tr>
+                                <td>#${order.id}</td>
+                                <td><b>${order.customer}</b><br><small>${order.phone}</small></td>
+                                <td>
+                                    <select onchange="updateStatus('${key}', this.value)">
+                                        <option value="Pending" ${order.status==='Pending'?'selected':''}>Pending</option>
+                                        <option value="Processing" ${order.status==='Processing'?'selected':''}>Processing</option>
+                                        <option value="Shipped" ${order.status==='Shipped'?'selected':''}>Shipped</option>
+                                        <option value="Delivered" ${order.status==='Delivered'?'selected':''}>Delivered</option>
+                                    </select>
+                                </td>
+                                <td>৳${order.total}</td>
+                                <td><button class="btn-del" onclick="deleteOrder('${key}')"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        `;
+                    });
+                }
+                document.getElementById('totalOrders').innerText = count;
+                document.getElementById('pendingOrders').innerText = pending;
+                document.getElementById('totalRevenue').innerText = '৳' + revenue;
+            });
+        }
+
+        // Status Update করার ফাংশন (Database-e change hobe)
+        function updateStatus(key, newStatus) {
+            db.ref('orders/' + key).update({
+                status: newStatus
+            }).then(() => {
+                console.log("Status Updated Online!");
+            });
+        }
+
+        // Order Delete করার ফাংশন
+        function deleteOrder(key) {
+            if(confirm("Are you sure?")) {
+                db.ref('orders/' + key).remove();
+            }
+        }
+
+        window.onload = fetchOrders;
+    </script>
+</body>
+</html>

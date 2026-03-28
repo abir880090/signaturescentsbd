@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scent Guide | Signature Scents BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        :root {
+            --brand-gold: #ffb400;
+            --bg-black: #000000;
+            --card-bg: #0d0d0d;
+            --border-color: #1a1a1a;
+            --wa-green: #25d366;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg-black); color: #fff; padding-bottom: 50px; overflow-x: hidden; }
+
+        /* Animated Mist Header */
+        .hero-mist {
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-mist::before {
+            content: '';
+            position: absolute;
+            width: 200%; height: 200%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.15;
+            animation: mistMove 25s linear infinite;
+        }
+        @keyframes mistMove { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; position: relative; }
+        .guide-header h1 { color: var(--brand-gold); font-size: 2rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; z-index: 1; }
+        .guide-header p { color: #666; font-size: 0.9rem; z-index: 1; }
+
+        /* Scent Quiz Box */
+        .quiz-box {
+            background: linear-gradient(135deg, #111 0%, #000 100%);
+            border: 1px solid var(--brand-gold);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px 0 40px;
+        }
+        .btn-quiz {
+            background: var(--brand-gold); color: #000; padding: 12px 25px;
+            border-radius: 50px; text-decoration: none; font-weight: 900;
+            display: inline-block; margin-top: 15px; font-size: 0.85rem; border: none; cursor: pointer;
+        }
+        .quiz-option-btn {
+            background: transparent; color: #fff; border: 1px solid #333;
+            padding: 12px; border-radius: 12px; width: 100%;
+            margin-bottom: 10px; cursor: pointer; transition: 0.3s;
+        }
+        .quiz-option-btn:hover { border-color: var(--brand-gold); color: var(--brand-gold); }
+
+        .section-label { color: var(--brand-gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin: 35px 0 15px; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+
+        /* Step Cards */
+        .step-card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 20px; 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            display: flex; gap: 20px; align-items: center;
+            transition: 0.4s;
+        }
+        .step-card:hover { border-color: var(--brand-gold); transform: translateY(-5px); }
+        .icon-box { 
+            background: rgba(255, 180, 0, 0.05); color: var(--brand-gold); 
+            width: 60px; height: 60px; border-radius: 15px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.4rem; flex-shrink: 0;
+        }
+        .step-content h3 { color: #fff; font-size: 1.1rem; margin-bottom: 6px; }
+        .step-content p { color: #999; font-size: 0.85rem; line-height: 1.5; }
+
+        /* Pulse Points */
+        .pulse-points { text-align: center; margin: 20px 0; padding: 20px; border: 1px dashed #333; border-radius: 15px; }
+        .pulse-points span { display: inline-block; background: #222; padding: 5px 12px; border-radius: 50px; margin: 5px; font-size: 0.8rem; color: var(--brand-gold); }
+
+        /* Pro Tip */
+        .pro-tip { 
+            background: linear-gradient(135deg, #111 0%, #000 100%); 
+            border: 1px solid var(--brand-gold);
+            padding: 25px; border-radius: 20px; margin-top: 30px;
+        }
+
+        /* Share Button */
+        .share-btn-wrap { text-align: center; margin: 30px 0; }
+        .btn-share { background: transparent; color: #666; border: 1px solid #333; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .btn-share:hover { border-color: var(--brand-gold); color: var(--brand-gold); }
+
+        /* Support Section */
+        .support-section {
+            text-align: center; margin-top: 50px; padding: 35px 20px;
+            background: #080808; border: 1px solid var(--border-color); border-radius: 25px;
+        }
+        .btn-support {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: var(--wa-green); color: #fff; padding: 15px 30px;
+            border-radius: 50px; text-decoration: none; font-weight: 800; margin-top: 20px;
+        }
+        .social-links { margin-top: 25px; display: flex; justify-content: center; gap: 25px; }
+        .social-links a { color: #555; font-size: 1.5rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--brand-gold); }
+    </style>
+</head>
+<body>
+
+    <div class="hero-mist">
+        <header class="guide-header" data-aos="fade-down">
+            <h1>Scent Etiquette</h1>
+            <p>Mastering the art of Signature Scents BD</p>
+        </header>
+    </div>
+
+    <div class="container">
+        
+        <div class="quiz-box" id="quiz-container" data-aos="zoom-in">
+            <div id="quiz-intro">
+                <h3 style="color: var(--brand-gold);">Find Your Signature?</h3>
+                <p style="color: #888; font-size: 0.8rem;">Let us help you choose the perfect scent in 10s.</p>
+                <button class="btn-quiz" onclick="runScentQuiz()">Start Quiz</button>
+            </div>
+            <div id="quiz-body" style="display: none;">
+                <h4 id="question-text" style="color: var(--brand-gold); margin-bottom: 20px; font-size: 1rem;"></h4>
+                <div id="options-wrap"></div>
+            </div>
+            <div id="quiz-result" style="display: none;">
+                <h3 style="color: var(--brand-gold);">Your Perfect Match:</h3>
+                <h2 id="match-name" style="margin: 10px 0; letter-spacing: 2px; color: #fff;"></h2>
+                <p id="match-desc" style="font-size: 0.85rem; color: #888; margin-bottom: 20px;"></p>
+                <button class="btn-quiz" onclick="location.reload()">Retake Quiz</button>
+            </div>
+        </div>
+
+        <span class="section-label">Application Guide</span>
+ 
+        <div class="step-card" data-aos="fade-right">
+            <div class="icon-box"><i class="fa-solid fa-droplet"></i></div>
+            <div class="step-content">
+                <h3>Skin Hydration</h3>
+                <p>Dry skin scent dhore rakhte pare na. Spray korar age unscented lotion ba Vaseline bebohar korun longevity double korte.</p>
+            </div>
+        </div>
+
+        <div class="step-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="icon-box"><i class="fa-solid fa-hand-sparkles"></i></div>
+            <div class="step-content">
+                <h3>The No-Rub Rule</h3>
+                <p>Perfume spray korar por wrists ghosha-ghoshi korben na. Ete top notes nosto hoye jay ebong original smell chole jay.</p>
+            </div>
+        </div>
+
+        <div class="pulse-points" data-aos="fade-in">
+            <span>Neck</span> <span>Wrists</span> <span>Behind Ears</span> <span>Inside Elbows</span>
+        </div>
+
+        <span class="section-label">Storage Secrets</span>
+
+        <div class="step-card" data-aos="fade-left">
+            <div class="icon-box"><i class="fa-solid fa-sun"></i></div>
+            <div class="step-content">
+                <h3>Avoid Heat & Light</h3>
+                <p>Direct sunlight ebong gorom jayga perfume-er chemical composition nosto kore. Drawer ba thanda jaygay store korun.</p>
+            </div>
+        </div>
+
+        <div class="pro-tip" data-aos="zoom-in">
+            <h4 style="color: var(--brand-gold); margin-bottom: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> The Fabric Mist</h4>
+            <p style="color: #bbb; font-size: 0.85rem; line-height: 1.6;">
+                Halka dur theke joma-y spray korun. Cotton fabric-e perfume-er oil base dhire dhire release hoy, fole ghran sarakhon thake.
+            </p>
+        </div>
+
+        <div class="share-btn-wrap" data-aos="fade-up">
+            <button class="btn-share" onclick="shareToWA()">
+                <i class="fa-solid fa-share-nodes"></i> Share tips with a friend
+            </button>
+        </div>
+
+        <div class="support-section" data-aos="fade-up">
+            <h3 style="color: var(--brand-gold);">Need Personal Advice?</h3>
+            <a href="https://wa.me/8801XXXXXXXXX" class="btn-support" target="_blank">
+                <i class="fa-brands fa-whatsapp"></i> Chat with Specialist
+            </a>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        // Quiz Logic
+        const questions = [
+            { q: "Aapni scent-ti kothay bebohar korben?", a: ["Office/Daily", "Party/Night Out"] },
+            { q: "Aapnar vibe kemon?", a: ["Strong & Bold", "Fresh & Clean"] },
+            { q: "Kono dhoron-er notes pochondo?", a: ["Woody/Spicy", "Citrus/Floral"] },
+            { q: "Longevity kemon dorkar?", a: ["Extra Long Lasting", "Standard"] },
+            { q: "Ghran kemon hote hobe?", a: ["Subtle (Halka)", "Loud (Bhari)"] }
+        ];
+
+        let currentStep = 0;
+        let score = 0;
+
+        function runScentQuiz() {
+            document.getElementById('quiz-intro').style.display = 'none';
+            document.getElementById('quiz-body').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentStep < questions.length) {
+                document.getElementById('question-text').innerText = questions[currentStep].q;
+                const optionsWrap = document.getElementById('options-wrap');
+                optionsWrap.innerHTML = '';
+                questions[currentStep].a.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.innerText = opt;
+                    btn.className = 'quiz-option-btn';
+                    btn.onclick = () => { score += index; currentStep++; showQuestion(); };
+                    optionsWrap.appendChild(btn);
+                });
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-body').style.display = 'none';
+            const result = document.getElementById('quiz-result');
+            const matchName = document.getElementById('match-name');
+            const matchDesc = document.getElementById('match-desc');
+            result.style.display = 'block';
+
+            if (score <= 2) {
+                matchName.innerText = "The Fresh Executive";
+                matchDesc.innerText = "Aapnar jonno best Citrus notes (Like Aventus clones). Eta office o daily use-e refresh rakhbe.";
+            } else if (score <= 4) {
+                matchName.innerText = "The Midnight King";
+                matchDesc.innerText = "Aapni Bold o Spicy vibes pochondo koren (Like Sauvage). Party-te sobar moddhe alada thakte eta best.";
+            } else {
+                matchName.innerText = "The Bold Beast";
+                matchDesc.innerText = "Aapnar dorkar Sweet o Strong projection (Like Hawas). Ete sarakhon ghran projection paben.";
+            }
+        }
+
+        function shareToWA() {
+            const text = "Check out these professional perfume tips from Signature Scents BD!";
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
