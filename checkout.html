@@ -203,7 +203,9 @@
             document.getElementById('orderIdDisplay').innerText = "#" + orderId;
             
             // Cart Clear kora
-            localStorage.removeItem('signatureScentsCart');
+            localStorage.removeItem// ২০৬ number line-er niche eita boshaben:
+sendTelegramNotification(orderData);
+('signatureScentsCart');
         }).catch((err) => {
             alert("Error: " + err.message);
             btn.disabled = false;
@@ -212,6 +214,62 @@
 
     // HTML Button-er jonno window object-e dewa
     window.processOrder = processOrder;
+    </script>
+    <script type="module">
+    import { db, ref, push } from "./firebase-config.js";
+
+    // ১. আপনার টেলিগ্রাম ডাটা এখানে বসান
+    const botToken = "8685578124:AAGBZ8qY5GfLtAL3BsrtDYMGFaO_7LUVdv8"; 
+    const chatId = "7767394170";
+
+    // ২. টেলিগ্রাম নোটিফিকেশন ফাংশন
+    async function sendTelegramNotification(orderData) {
+        const message = `
+🔔 *New Order from Signature Scents BD!*
+-------------------------
+👤 *Name:* ${orderData.name}
+📞 *Phone:* ${orderData.phone}
+📍 *Address:* ${orderData.address}
+💰 *Total:* ${orderData.totalPrice} TK
+✅ *Status:* Pending
+-------------------------
+        `;
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+        });
+    }
+
+    // ৩. অর্ডার কনফার্ম করার মেইন ফাংশন
+    // আপনার ফর্মে যে সাবমিট বাটন আছে সেটার ID যদি 'checkout-form' হয়
+    const checkoutForm = document.querySelector('form'); 
+
+    checkoutForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // ফর্ম থেকে ডাটা নেওয়া (আপনার ইনপুট ID অনুযায়ী নামগুলো মিলিয়ে নিবেন)
+        const orderData = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            totalPrice: document.querySelector('.total-price').innerText || "0", 
+            status: "Pending",
+            timestamp: new Date().toLocaleString()
+        };
+
+        // ৪. Firebase-এ ডাটা সেভ এবং টেলিগ্রাম পাঠানো
+        const orderRef = ref(db, 'orders');
+        push(orderRef, orderData).then(() => {
+            sendTelegramNotification(orderData); // টেলিগ্রাম মেসেজ যাবে
+            alert("Order Successful! Signature Scents BD-র সাথে থাকার জন্য ধন্যবাদ।");
+            localStorage.removeItem('cart'); // কার্ট খালি করা
+            window.location.href = "index.html"; // শপ পেজে ফেরত পাঠানো
+        }).catch((error) => {
+            alert("Error: " + error.message);
+        });
+    });
 </script>
 <script>
     let subtotal = 0; 
@@ -227,7 +285,7 @@
             document.getElementById('prodSubtotal').innerText = subtotal;
         } else {
             // যদি কার্টে কিছু না থাকে তবে শপ পেজে পাঠিয়ে দেওয়া
-            window.location.href = "shop.html"; 
+            window.location.href = "index.html"; 
         }
         setInitialDate();
         updateSummary();
