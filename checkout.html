@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Scents BD | Premium Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-black: #000000;
+            --brand-gold: #ffb400; 
+            --soft-gold: #d4af37;
+            --input-bg: #111;
+            --glass-border: rgba(255, 180, 0, 0.2);
+            --buy-green: #008a00;
+            --urgency-red: #ff4444;
+            --card-ivory: #fdfaf0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-black); color: #fff; padding: 10px 15px 80px; }
+
+        .checkout-container { max-width: 500px; margin: 0 auto; }
+
+        .timer-bar { background: rgba(255, 68, 68, 0.05); border: 1px solid var(--urgency-red); padding: 10px; border-radius: 12px; text-align: center; font-size: 0.75rem; color: var(--urgency-red); margin-bottom: 20px; font-weight: bold; }
+
+        .section-box { background: #0d0d0d; border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 20px; transition: 0.3s; }
+        .section-title { font-size: 0.85rem; font-weight: bold; color: var(--brand-gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 14px 15px; background: var(--input-bg); border: 1px solid #222; border-radius: 10px; color: #fff; outline: none; transition: 0.3s; font-size: 0.95rem; }
+        .form-group input:focus { border-color: var(--brand-gold); box-shadow: 0 0 10px rgba(255, 180, 0, 0.1); }
+
+        .gift-wrapper { background: rgba(255, 180, 0, 0.03); border-radius: 12px; border: 1px solid var(--glass-border); padding: 15px; }
+        .gift-option { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .gift-option input { width: 18px; height: 18px; accent-color: var(--brand-gold); }
+        #noteContainer { display: none; margin-top: 15px; animation: fadeIn 0.4s ease; }
+        .luxury-note-card { background: var(--card-ivory); border-radius: 8px; padding: 15px; border-left: 5px solid var(--brand-gold); }
+        .luxury-note-card textarea { width: 100%; background: transparent; border: none; color: #333; font-style: italic; outline: none; font-family: 'Georgia', serif; font-size: 14px; }
+
+        .delivery-card { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #111; border: 1px solid #222; border-radius: 12px; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
+        .delivery-card.active { border-color: var(--brand-gold); background: rgba(255, 180, 0, 0.08); transform: scale(1.02); }
+        .est-delivery-box { background: rgba(0, 255, 170, 0.05); color: #00ffaa; padding: 10px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(0, 255, 170, 0.1); }
+        
+        .summary-item { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #bbb; }
+
+        .btn-confirm { width: 100%; padding: 18px; background: var(--brand-gold); color: #000; border: none; border-radius: 12px; font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 180, 0, 0.3); transition: 0.3s; position: relative; }
+        .btn-confirm:active { transform: scale(0.98); }
+        
+        .spinner { display: none; width: 22px; height: 22px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .loading .spinner { display: block; }
+        .loading .btn-text { display: none; }
+
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .popup-box { background: #0d0d0d; width: 85%; max-width: 360px; border-radius: 25px; border: 1px solid var(--glass-border); padding: 35px; text-align: center; }
+        .order-id-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--brand-gold); margin: 20px 0; color: var(--brand-gold); font-family: monospace; font-size: 1.4rem; font-weight: bold; }
+
+        #premiumToast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4444; color: #fff; padding: 12px 25px; border-radius: 50px; z-index: 10000; font-weight: bold; align-items: center; gap: 10px; animation: slideDown 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes slideDown { from { top: -60px; } to { top: 20px; } }
+    </style>
+</head>
+<body>
+
+    <div id="premiumToast">
+        <i class="fa-solid fa-circle-exclamation"></i> <span id="toastMsg">Please fill all details</span>
+    </div>
+
+    <div class="checkout-container">
+        <div class="timer-bar"><i class="fa-solid fa-clock"></i> Offer ends in <span id="timer">10:00</span></div>
+
+        <div class="section-box">
+            <div class="section-title"><i class="fa-solid fa-address-card"></i> Delivery Details</div>
+            <div class="form-group"><input type="text" id="userName" placeholder="Recipient Name"></div>
+            <div class="form-group"><input type="tel" id="userPhone" placeholder="Mobile Number (01XXXXXXXXX)" maxlength="11"></div>
+            <div class="form-group"><textarea id="userAddress" rows="2" placeholder="Full Delivery Address"></textarea></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title"><i class="fa-solid fa-gift"></i> Gifting Service</div>
+            <div class="gift-wrapper">
+                <label class="gift-option">
+                    <input type="checkbox" id="giftWrapCheck" onchange="toggleNote()">
+                    <div style="font-size: 0.85rem; color: #eee;">Premium Wrap & Personal Note (+৳50)</div>
+                </label>
+                <div id="noteContainer">
+                    <div class="luxury-note-card">
+                        <textarea id="customerNote" rows="3" placeholder="Write your heartfelt message here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title"><i class="fa-solid fa-truck"></i> Shipping Method</div>
+            <div class="delivery-card active" id="dhakaDelivery" onclick="selectDelivery(60, this, 2)">
+                <div><i class="fa-solid fa-house-chimney"></i> Inside Dhaka</div>
+                <div style="font-weight: 900;">৳60</div>
+            </div>
+            <div class="delivery-card" onclick="selectDelivery(120, this, 4)">
+                <div><i class="fa-solid fa-truck-fast"></i> Outside Dhaka</div>
+                <div style="font-weight: 900;">৳120</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title"><i class="fa-solid fa-receipt"></i> Order Summary</div>
+            <div class="est-delivery-box"><i class="fa-solid fa-calendar-check"></i> Estimated Delivery: <strong id="estDate">Calculated...</strong></div>
+            
+            <div class="summary-item">
+                <span>Items Subtotal</span>
+                <span>৳ <span id="prodSubtotal">0</span></span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping Fee</span>
+                <span>৳ <span id="delCharge">60</span></span>
+            </div>
+            <div class="summary-item" id="giftRow" style="display:none;">
+                <span>Gift Packaging</span>
+                <span>+ ৳ 50</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 1.4rem; font-weight: 900; color: var(--brand-gold); border-top: 1px solid #222; padding-top: 15px; margin-top: 15px;">
+                <span>Total Amount</span>
+                <span>৳ <span id="finalTotal">0</span></span>
+            </div>
+        </div>
+
+        <button class="btn-confirm" id="confirmBtn" onclick="processOrder()">
+            <span class="btn-text">Place Order Now</span>
+            <div class="spinner"></div>
+        </button>
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-box" id="loadingBox">
+            <div class="spinner" style="display:block; width:50px; height:50px; border-width:4px; border-top-color:var(--brand-gold); margin:0 auto 20px;"></div>
+            <p style="font-weight: bold; letter-spacing: 1px; color:#fff;">AUTHENTICATING ORDER...</p>
+        </div>
+
+        <div class="popup-box" id="successBox" style="display:none;">
+            <div style="width:70px; height:70px; background:var(--buy-green); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+                <i class="fa-solid fa-check" style="color:#fff; font-size:2rem;"></i>
+            </div>
+            <h2 style="color:#fff; margin-bottom:5px;">Order Placed!</h2>
+            <p style="color:#888; font-size:0.8rem;">Save your Order ID for tracking</p>
+            <div class="order-id-box" id="orderIdDisplay">#SS-XXXXX</div>
+            <button onclick="copyAndRedirect()" style="width:100%; padding:18px; background:var(--brand-gold); border:none; border-radius:12px; font-weight:900; cursor:pointer; color:#000;">
+                <span id="finalBtnText">COPY ID & FINISH</span>
+            </button>
+        </div>
+    </div>
+    
+    <script type="module">
+    import { db, ref, push } from './firebase-config.js';
+
+    function processOrder() {
+        const name = document.getElementById('userName').value.trim();
+        const phone = document.getElementById('userPhone').value.trim();
+        const address = document.getElementById('userAddress').value.trim();
+        const isGift = document.getElementById('giftWrapCheck').checked;
+        const note = document.getElementById('customerNote').value;
+
+        // Validation
+        if(!name || phone.length < 11 || address.length < 10) {
+            alert("Please fill all details correctly!");
+            return;
+        }
+
+        // Cart theke data neya
+        const cartData = JSON.parse(localStorage.getItem('signatureScentsCart') || '[]');
+        const orderId = Math.floor(100000 + Math.random() * 900000);
+        
+        // Final Total (Apnar existing variable thakle sheta use korben)
+        const total = document.getElementById('finalTotal').innerText;
+
+        const orderData = {
+            id: orderId,
+            customer: name,
+            phone: phone,
+            address: address,
+            items: cartData,
+            total: parseInt(total),
+            status: "Pending",
+            gift: isGift ? "Yes" : "No",
+            note: note,
+            date: new Date().toLocaleString()
+        };
+
+        // Firebase-e Push kora
+        const ordersRef = ref(db, 'orders');
+        
+        // Button loading state
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true;
+        btn.innerText = "PLACING ORDER...";
+
+        push(ordersRef, orderData).then(() => {
+            // Success Pop-up dekhano (Apnar existing logic)
+            document.getElementById('popupOverlay').style.display = 'flex';
+            document.getElementById('orderIdDisplay').innerText = "#" + orderId;
+            
+            // Cart Clear kora
+            localStorage.removeItem('signatureScentsCart');
+        }).catch((err) => {
+            alert("Error: " + err.message);
+            btn.disabled = false;
+        });
+    }
+
+    // HTML Button-er jonno window object-e dewa
+    window.processOrder = processOrder;
+</script>
+<script>
+    let subtotal = 0; 
+    let deliveryCharge = 60;
+    let giftCharge = 50;
+    let timeLeft = 600; 
+
+    // ১. ডাটা লোড করা
+    window.addEventListener('DOMContentLoaded', () => {
+        const cartData = JSON.parse(localStorage.getItem('signatureScentsCart') || '[]');
+        if (cartData.length > 0) {
+            subtotal = cartData.reduce((s, item) => s + (item.price * item.qty), 0);
+            document.getElementById('prodSubtotal').innerText = subtotal;
+        } else {
+            // যদি কার্টে কিছু না থাকে তবে শপ পেজে পাঠিয়ে দেওয়া
+            window.location.href = "shop.html"; 
+        }
+        setInitialDate();
+        updateSummary();
+    });
+
+    function setInitialDate() {
+        const d = new Date(); d.setDate(d.getDate() + 2);
+        document.getElementById('estDate').innerText = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    // ২. টাইমার
+    const timerDisplay = document.getElementById('timer');
+    setInterval(() => {
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        timerDisplay.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if(timeLeft > 0) timeLeft--;
+    }, 1000);
+
+    function showToast(msg) {
+        const toast = document.getElementById('premiumToast');
+        document.getElementById('toastMsg').innerText = msg;
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    function toggleNote() {
+        const isChecked = document.getElementById('giftWrapCheck').checked;
+        document.getElementById('noteContainer').style.display = isChecked ? 'block' : 'none';
+        updateSummary();
+    }
+
+    function selectDelivery(charge, el, days) {
+        deliveryCharge = charge;
+        document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        
+        const date = new Date(); 
+        date.setDate(date.getDate() + days);
+        document.getElementById('estDate').innerText = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const isGiftChecked = document.getElementById('giftWrapCheck').checked;
+        document.getElementById('delCharge').innerText = deliveryCharge;
+        document.getElementById('giftRow').style.display = isGiftChecked ? 'flex' : 'none';
+        
+        let finalPayable = subtotal + deliveryCharge + (isGiftChecked ? giftCharge : 0);
+        document.getElementById('finalTotal').innerText = finalPayable;
+    }
+
+    function processOrder() {
+        const name = document.getElementById('userName').value.trim();
+        const phone = document.getElementById('userPhone').value.trim();
+        const address = document.getElementById('userAddress').value.trim();
+
+        if(!name) { showToast("Recipient Name is required"); return; }
+        if(phone.length < 11 || !phone.startsWith("01")) { showToast("Enter a valid Mobile Number"); return; }
+        if(address.length < 10) { showToast("Please provide a detailed Address"); return; }
+
+        const btn = document.getElementById('confirmBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        setTimeout(() => {
+            document.getElementById('popupOverlay').style.display = 'flex';
+            document.getElementById('loadingBox').style.display = 'block';
+        }, 800);
+
+        setTimeout(() => {
+            const randomID = "SS-" + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('orderIdDisplay').innerText = randomID;
+            document.getElementById('loadingBox').style.display = 'none';
+            document.getElementById('successBox').style.display = 'block';
+            
+            // ৩. অর্ডার সাকসেস হলে লোকাল স্টোরেজ ক্লিন করা
+            localStorage.removeItem('signatureScentsCart');
+        }, 3500);
+    }
+    function processOrder() {
+        const name = document.getElementById('userName').value.trim();
+        const phone = document.getElementById('userPhone').value.trim();
+        const address = document.getElementById('userAddress').value.trim();
+        const isGiftChecked = document.getElementById('giftWrapCheck').checked;
+        const note = document.getElementById('customerNote').value.trim();
+
+        if(!name) { showToast("Recipient Name is required"); return; }
+        if(phone.length < 11 || !phone.startsWith("01")) { showToast("Enter a valid Mobile Number"); return; }
+        if(address.length < 10) { showToast("Please provide a detailed Address"); return; }
+
+        const btn = document.getElementById('confirmBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        // ১. অর্ডার ডাটা তৈরি করা
+        const cartData = JSON.parse(localStorage.getItem('signatureScentsCart') || '[]');
+        const orderId = Math.floor(100000 + Math.random() * 900000); // ৬ ডিজিটের আইডি
+        const finalPayable = subtotal + deliveryCharge + (isGiftChecked ? giftCharge : 0);
+
+        const newOrder = {
+            id: orderId,
+            customer: name,
+            phone: phone,
+            address: address,
+            items: cartData,
+            total: finalPayable,
+            status: "Pending", // Default status for Admin
+            gift: isGiftChecked ? "Yes" : "No",
+            note: note,
+            date: new Date().toLocaleString()
+        };
+
+        // ২. Admin Panel-er jonno data save kora
+        let allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+        allOrders.push(newOrder);
+        localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
+        // Animation logic (Apnar existing design)
+        setTimeout(() => {
+            document.getElementById('popupOverlay').style.display = 'flex';
+            document.getElementById('loadingBox').style.display = 'block';
+        }, 800);
+
+        setTimeout(() => {
+            document.getElementById('orderIdDisplay').innerText = "#" + orderId;
+            document.getElementById('loadingBox').style.display = 'none';
+            document.getElementById('successBox').style.display = 'block';
+            
+            // কার্ট ক্লিয়ার করা
+            localStorage.removeItem('signatureScentsCart');
+        }, 3500);
+    }
+
+    function copyAndRedirect() {
+        const idFull = document.getElementById('orderIdDisplay').innerText;
+        const idOnly = idFull.replace('#', ''); // Shudhu number-ta copy korbe
+        
+        navigator.clipboard.writeText(idOnly).then(() => {
+            const btnText = document.getElementById('finalBtnText');
+            btnText.innerHTML = '<i class="fa-solid fa-check"></i> ID COPIED! REDIRECTING...';
+            
+            setTimeout(() => {
+                // Tracking page-e pathiye dewa jate she check korte pare
+                window.location.href = "track.html"; 
+            }, 2000);
+        });
+    }
+
+    function copyAndRedirect() {
+        const id = document.getElementById('orderIdDisplay').innerText;
+        navigator.clipboard.writeText(id);
+        const btnText = document.getElementById('finalBtnText');
+        btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Finalizing...';
+        
+        setTimeout(() => {
+            window.location.href = "shop.html"; 
+        }, 1500);
+    }
+</script>
+</body>
+</html>

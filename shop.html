@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Scents BD | Premium Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-black: #000000;
+            --brand-gold: #ffb400; 
+            --soft-gold: #d4af37;
+            --buy-green: #008a00;
+            --glass-border: rgba(255, 180, 0, 0.2);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-black); color: #fff; overflow-x: hidden; padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
+
+        .main-wrapper { max-width: 500px; margin: 0 auto; padding: 0 12px; }
+
+        .top-bar { background: linear-gradient(90deg, var(--soft-gold), var(--brand-gold)); color: #000; height: 38px; overflow: hidden; display: flex; align-items: center; }
+        .text-slider { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .text-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+
+        .hero-slider-container { width: 100%; overflow: hidden; border-radius: 15px; margin-top: 15px; position: relative; aspect-ratio: 16/9; border: 1px solid var(--glass-border); }
+        .hero-slider { display: flex; transition: transform 0.5s ease-in-out; height: 100%; will-change: transform; }
+        .hero-slide { min-width: 100%; height: 100%; }
+        .hero-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        .side-menu { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: rgba(10, 10, 10, 0.98); z-index: 5000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--glass-border); padding: 40px 25px; backdrop-filter: blur(15px); }
+        .side-menu.active { left: 0; }
+        .menu-header { margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .menu-header h2 { color: var(--brand-gold); font-size: 1.4rem; letter-spacing: 1px; }
+        .menu-item { padding: 18px 0; color: #eee; display: flex; align-items: center; text-decoration: none; transition: 0.3s; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .menu-item i { width: 30px; color: var(--brand-gold); font-size: 1.1rem; margin-right: 15px; }
+        .menu-item:hover { color: var(--brand-gold); padding-left: 10px; }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4999; display: none; backdrop-filter: blur(4px); }
+
+        .menu-bubble { position: fixed; bottom: 90px; left: 20px; background: rgba(20, 20, 20, 0.9); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); z-index: 1000; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+
+        .cart-bubble { position: fixed; bottom: 90px; right: 20px; background: var(--brand-gold); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(255, 180, 0, 0.4); z-index: 100; cursor: pointer; }
+        .cart-count { position: absolute; top: 0; right: 0; background: #ff0000; color: #fff; font-size: 0.7rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #000; }
+
+        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
+        .tab { padding: 8px 18px; border-radius: 20px; border: 1px solid #222; background: #111; color: #888; font-size: 0.7rem; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .tab.active { background: var(--brand-gold); color: #000; border-color: var(--brand-gold); }
+
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .product-card { background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111; transition: 0.3s; position: relative; }
+        .product-card img { width: 100%; aspect-ratio: 1 / 1.25; object-fit: cover; border-radius: 12px; cursor: pointer; }
+
+        .btn-style { width: 100%; padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.65rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-buy { background: var(--brand-gold); color: #000; margin-bottom: 6px; }
+        .btn-cart { background: transparent; color: var(--brand-gold); border: 1px solid var(--brand-gold); }
+        
+        .lux-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 20px 10px; backdrop-filter: blur(8px); }
+        .lux-modal { background: #0d0d0d; width: 100%; max-width: 420px; border-radius: 20px; position: relative; border: 1px solid var(--glass-border); margin-bottom: 50px; box-shadow: 0 10px 30px rgba(255,180,0,0.3); opacity: 0; transform: translateY(20px); transition: all 0.4s ease; }
+        .lux-overlay.show .lux-modal { opacity: 1; transform: translateY(0); }
+
+        .cart-sidebar { position: fixed; top: 0; right: -100%; width: 85%; max-width: 380px; height: 100%; background: #0d0d0d; z-index: 6000; transition: 0.3s; display: flex; flex-direction: column; border-left: 1px solid var(--glass-border); }
+        .cart-sidebar.active { right: 0; }
+
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #080808; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 12px 0; z-index: 99; }
+        .nav-item { text-align: center; color: #555; font-size: 0.7rem; flex: 1; text-decoration: none; cursor: pointer; }
+        .nav-item.active { color: var(--brand-gold); }
+
+        .ml-selector { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+        .ml-btn {
+            padding: 8px 14px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #111;
+            color: #ccc;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 60px;
+            text-align: center;
+        }
+        .ml-btn.active {
+            background: var(--brand-gold);
+            color: #000;
+            border-color: var(--brand-gold);
+        }
+
+        .detail-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 0.8rem; color: #ccc; }
+
+        .modal-action-btns { display: flex; gap: 12px; margin-top: 18px; }
+
+        .cart-item { display: flex; gap: 12px; background: #111; padding: 12px; border-radius: 10px; margin-bottom: 12px; align-items: center; }
+        .cart-qty-controls { display: flex; align-items: center; gap: 8px; background: #222; padding: 4px 8px; border-radius: 6px; }
+        .qty-btn { width: 24px; height: 24px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        .remove-btn { color: #ff4444; cursor: pointer; font-size: 1.2rem; margin-left: auto; }
+
+        .stock-badge.out-of-stock {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: #c0392b;
+            color: white;
+            z-index: 10;
+        }
+
+        #outOfStockToast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.95); color: #ff7777; padding: 12px 28px;
+            border-radius: 50px; font-weight: bold; font-size: 0.95rem;
+            z-index: 16000; opacity: 0; transition: all 0.4s;
+            pointer-events: none; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 10px;
+        }
+        #outOfStockToast.show { opacity: 1; transform: translateX(-50%) translateY(-15px); }
+
+        #successPopup {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 170, 0, 0.9); color: white; padding: 12px 28px;
+            border-radius: 50px; font-weight: bold; font-size: 0.95rem;
+            z-index: 15000; opacity: 0; transition: all 0.4s;
+            pointer-events: none; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        #successPopup.show { opacity: 1; transform: translateX(-50%) translateY(-15px); }
+
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center;
+            align-items: center; z-index: 20000; backdrop-filter: blur(10px);
+        }
+
+        .spinner {
+            width: 60px; height: 60px;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--brand-gold);
+            border-right: 3px solid rgba(255, 180, 0, 0.2);
+            border-radius: 50%; position: relative;
+            animation: spin 1.2s cubic-bezier(0.5,0,0.5,1) infinite;
+        }
+
+        .spinner::before {
+            content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 2px solid transparent; border-top: 2px solid var(--soft-gold);
+            border-radius: 50%; opacity: 0.6;
+            animation: spin 2s linear infinite reverse;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Modal Button Size Equal Kora */
+.modal-action-btns { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 15px; 
+}
+.modal-action-btns .btn-style { 
+    flex: 1; 
+    margin: 0; 
+    height: 45px; 
+}
+
+/* Toast Message Style */
+#outOfStockToast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.95); color: #ffb400; padding: 12px 25px;
+    border-radius: 50px; font-weight: bold; font-size: 0.9rem;
+    z-index: 20000; opacity: 0; transition: 0.4s;
+    pointer-events: none; border: 1px solid rgba(255,180,0,0.3);
+    display: flex; align-items: center; gap: 10px;
+}
+#outOfStockToast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+    </style>
+</head>
+<body>
+
+<div id="successPopup">Added to Bag Successfully ✓</div>
+<div id="outOfStockToast"><i class="fa-solid fa-ban"></i> This product is currently unavailable</div>
+
+<div class="loader-overlay" id="globalLoader">
+    <div class="spinner"></div>
+</div>
+
+    <div class="top-bar">
+        <div class="text-slider" id="textSlider">
+            <div class="text-slide">🚚 Delivery Free on First Order</div>
+            <div class="text-slide">✨ Quality Guaranteed Products</div>
+        </div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <h2>Signature Scents</h2>
+            <p style="font-size: 0.6rem; color: #666; text-transform: uppercase; margin-top: 5px;">Premium Fragrance BD</p>
+        </div>
+        <a href="index.html" class="menu-item"><i class="fa-solid fa-house-chimney"></i> Home</a>
+        <a href="shop.html" class="menu-item" style="color: var(--brand-gold);"><i class="fa-solid fa-gem"></i> Shop All</a>
+        <a href="custom-combo.html" class="menu-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Combo</a>
+        <a href="track.html" class="menu-item"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="guide.html" class="menu-item"><i class="fa-solid fa-book-open"></i> Usage Guide</a>
+        <a href="support.html" class="menu-item"><i class="fa-solid fa-headset"></i> Help & Support</a>
+        <a href="privacy.html" class="menu-item"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+        <a href="terms.html" class="menu-item"><i class="fa-solid fa-file-contract"></i> Terms & Condition</a>
+        <a href="about.html" class="menu-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
+        <div style="margin-top: 50px;">
+            <p style="font-size: 0.7rem; color: #444;">Follow Us</p>
+            <div style="display: flex; gap: 15px; margin-top: 10px; color: var(--brand-gold);">
+                <i class="fa-brands fa-facebook"></i>
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-bubble" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars-staggered" style="color: var(--brand-gold); font-size: 1.5rem;"></i>
+    </div>
+    
+    <div class="cart-bubble" onclick="toggleCart()">
+        <i class="fa-solid fa-bag-shopping" style="color: #000;"></i>
+        <div class="cart-count" id="cartCountBadge">0</div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="hero-slider-container">
+            <div class="hero-slider" id="heroSlider">
+                <div class="hero-slide"><img src="https://images.unsplash.com/photo-1594035910387-fea47794261f" alt="Slide 1"></div>
+                <div class="hero-slide"><img src="https://images.unsplash.com/photo-1541643600914-78b084683601" alt="Slide 2"></div>
+                <div class="hero-slide"><img src="https://images.unsplash.com/photo-1523293182086-7651a899d37f" alt="Slide 3"></div>
+            </div>
+        </div>
+
+        <div class="search-container" style="margin:20px 0;">
+            <input type="text" onkeyup="searchPerfume(this.value)" style="width:100%; padding:14px 20px; border-radius:30px; background:#111; color:#fff; border:1px solid #333; outline:none;" placeholder="Search your scent...">
+        </div>
+
+        <div class="filter-tabs">
+            <div class="tab active" onclick="filterProducts('all', this)">ALL</div>
+            <div class="tab" onclick="filterProducts('him', this)">HIM</div>
+            <div class="tab" onclick="filterProducts('her', this)">HER</div>
+            <div class="tab" onclick="filterProducts('unisex', this)">UNISEX</div>
+            <div class="tab" onclick="filterProducts('combo', this)">COMBO</div>
+            <div class="tab" onclick="filterProducts('attar', this)">ATTAR</div>
+            <div class="tab" onclick="filterProducts('watch', this)">WATCH</div>
+            <div class="tab" onclick="filterProducts('sunglass', this)">SUNGLASS</div>
+            <div class="tab" onclick="filterProducts('wallet', this)">WALLET</div>
+        </div>
+
+        <div class="product-grid" id="mainGrid"></div>
+    </div>
+
+    <div id="luxProductModal" class="lux-overlay" onclick="if(event.target == this) closeLuxModal()">
+        <div class="lux-modal">
+            <span class="lux-close" onclick="closeLuxModal()" style="position: absolute; top: 15px; right: 15px; color: #fff; font-size: 2rem; cursor: pointer;">×</span>
+            <img id="luxMImg" src="" style="width:100%; max-height:280px; object-fit:cover; border-radius:20px 20px 0 0;">
+            <div style="padding:20px;">
+                <h2 id="luxMTitle" style="color:var(--brand-gold); text-transform:uppercase; font-size:1.2rem;"></h2>
+                
+                <div class="detail-row"><span>Projection:</span><span id="luxMProjection"></span></div>
+                <div class="detail-row"><span>Longevity:</span><span id="luxMLongevity"></span></div>
+                
+                <div style="margin: 15px 0;">
+                    <label style="font-size:0.85rem; color:#ccc; display:block; margin-bottom:8px;">Select Size (ml):</label>
+                    <div class="ml-selector" id="mlSelector"></div>
+                </div>
+                
+                <div style="font-size:1.3rem; font-weight:bold; color:var(--brand-gold); margin:10px 0;" id="luxMPrice">৳ 0</div>
+                <p id="luxMNotes" style="font-size: 0.75rem; color: #bbb; margin-bottom: 15px; font-style: italic;"></p>
+
+                <div id="stockWarning" class="modal-stock-warning"></div>
+
+                <div class="modal-action-btns">
+                    <button class="btn-style btn-cart" onclick="addFromModal()">ADD TO BAG</button>
+                    <button class="btn-style btn-buy" onclick="buyFromModalDirect()" style="background:var(--buy-green); color:#fff;">BUY NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="font-size:1.1rem;">Your Bag</h3>
+            <span onclick="toggleCart()" style="cursor:pointer; font-size:1.2rem;">✕</span>
+        </div>
+        <div id="cartItemsList" style="flex:1; overflow-y:auto; padding:15px;"></div>
+        <div style="padding:20px; border-top:1px solid #222; background:#080808;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold;">
+                <span>Subtotal:</span><span id="finalTotal" style="color:var(--brand-gold);">৳ 0</span>
+            </div>
+            <button onclick="goToCheckout()" class="btn-style btn-buy">Go To Checkout</button>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><br>Home</a>
+        <div class="nav-item active" onclick="toggleCart()"><i class="fa-solid fa-bag-shopping"></i><br>Bag</div>
+        <a href="guide.html" class="nav-item"><i class="fa-solid fa-book-open"></i><br>Guide</a>
+        <a href="about.html" class="nav-item"><i class="fa-solid fa-user"></i><br>About</a>
+    </div>
+    
+    <script type="module">
+    import { db, ref, onValue } from './firebase-config.js';
+
+    // ১. Firebase theke product ana
+    function loadProducts() {
+        const productsRef = ref(db, 'products');
+        
+        onValue(productsRef, (snapshot) => {
+            const data = snapshot.val();
+            let productsArray = [];
+            
+            if (data) {
+                // Firebase object-ke array-te convert kora
+                productsArray = Object.keys(data).map(key => ({
+                    firebaseKey: key, // Pore dorkar hote pare
+                    ...data[key]
+                }));
+                
+                // Apnar existing render function call kora
+                renderProducts(productsArray); 
+            } else {
+                console.log("No products found in Firebase!");
+            }
+        });
+    }
+
+    // ২. Cart logic (Local Storage-ei thakbe jate reload dile na jay)
+    window.addDirectToCart = function(productId) {
+        // Apnar purano cart logic ekhane thakbe
+        // Shudhu ensure korun productId ta match korche
+    };
+
+    window.onload = loadProducts;
+</script>
+    <script>
+        const products = [
+            { id: 1, cat: "him", t: "Sauvage Elixir", i: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400", prices: { 6: 550, 10: 900, 15: 1300, 30: 2500 }, info: "Premium spice and lavender mix.", projection: "3-4 Feet", longevity: "12+ Hours", stock: 45 },
+            { id: 2, cat: "him", t: "Creed Aventus", i: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", prices: { 6: 600, 10: 1000, 15: 1450, 30: 2800 }, info: "King of perfumes with smoky pineapple notes.", projection: "3 Feet", longevity: "8-10 Hours", stock: 32 },
+            { id: 3, cat: "him", t: "Club De Nuit", i: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400", prices: { 6: 450, 10: 750, 15: 1100, 30: 2100 }, info: "Strong citrus and woody opening.", projection: "4 Feet", longevity: "10+ Hours", stock: 7 },
+            { id: 4, cat: "him", t: "Versace Eros", i: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", prices: { 6: 500, 10: 850, 15: 1200, 30: 2300 }, info: "Minty fresh with sweet vanilla base.", projection: "3 Feet", longevity: "8+ Hours", stock: 18 },
+            { id: 5, cat: "him", t: "Bleu De Chanel", i: "https://images.unsplash.com/photo-1557170334-a9632e77c6e4?w=400", prices: { 6: 600, 10: 1000, 15: 1450, 30: 2800 }, info: "Sophisticated fresh and woody scent.", projection: "2-3 Feet", longevity: "7-9 Hours", stock: 25 },
+            { id: 6, cat: "him", t: "Invictus Victory", i: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400", prices: { 6: 500, 10: 850, 15: 1200, 30: 2300 }, info: "Sweet citrus with incense and vanilla.", projection: "3 Feet", longevity: "9+ Hours", stock: 12 },
+            { id: 7, cat: "him", t: "Dior Homme Intense", i: "https://images.unsplash.com/photo-1592914610354-fd354ea45e48?w=400", prices: { 6: 650, 10: 1100, 15: 1550, 30: 3000 }, info: "Powdery iris with a masculine woody touch.", projection: "2 Feet", longevity: "10+ Hours", stock: 9 },
+            { id: 8, cat: "him", t: "Acqua Di Gio", i: "https://images.unsplash.com/photo-1547637589-f54c34f5d7a4?w=400", prices: { 6: 450, 10: 750, 15: 1100, 30: 2100 }, info: "Classic aquatic and fresh citrus scent.", projection: "2 Feet", longevity: "6-7 Hours", stock: 40 },
+            { id: 9, cat: "him", t: "Tobacco Vanille", i: "https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400", prices: { 6: 700, 10: 1200, 15: 1700, 30: 3200 }, info: "Rich tobacco leaf with sweet vanilla spice.", projection: "4 Feet", longevity: "12+ Hours", stock: 15 },
+            { id: 10, cat: "him", t: "Stronger With You", i: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400", prices: { 6: 550, 10: 900, 15: 1300, 30: 2500 }, info: "Warm, spicy, and nutty sweet fragrance.", projection: "3 Feet", longevity: "9-10 Hours", stock: 22 },
+            { id: 11, cat: "her", t: "Coco Mademoiselle", i: "https://images.unsplash.com/photo-1585120810352-320349896474?w=400", prices: { 6: 650, 10: 1100, 15: 1550, 30: 3000 }, info: "Elegant floral with a touch of citrus.", projection: "3 Feet", longevity: "8-10 Hours", stock: 28 },
+            { id: 12, cat: "her", t: "Black Opium", i: "https://images.unsplash.com/photo-1563170351-be39c88f27aa?w=400", prices: { 6: 550, 10: 900, 15: 1300, 30: 2500 }, info: "Addictive coffee and sweet vanilla floral.", projection: "3 Feet", longevity: "8+ Hours", stock: 14 },
+            { id: 13, cat: "her", t: "Flowerbomb", i: "https://images.unsplash.com/photo-1563170351-be39c88f27aa?w=400", prices: { 6: 550, 10: 900, 15: 1300, 30: 2500 }, info: "Explosive floral bouquet with sweet notes.", projection: "3 Feet", longevity: "7-9 Hours", stock: 19 },
+            { id: 14, cat: "her", t: "Good Girl", i: "https://images.unsplash.com/photo-1585120810352-320349896474?w=400", prices: { 6: 600, 10: 1000, 15: 1450, 30: 2800 }, info: "Sweet almond, coffee, and tuberose blend.", projection: "3 Feet", longevity: "9+ Hours", stock: 11 },
+            { id: 15, cat: "attar", t: "White Musk Attar", i: "https://images.unsplash.com/photo-1616984242997-d73bfdd27616?w=400", prices: { 6: 250, 10: 400, 15: 550, 30: 1000 }, info: "Clean, soapy, and fresh white musk.", projection: "1-2 Feet", longevity: "6-8 Hours", stock: 50 },
+            { id: 16, cat: "attar", t: "Dehn Al Oud", i: "https://images.unsplash.com/photo-1610461821210-9176317cc633?w=400", prices: { 6: 400, 10: 650, 15: 900, 30: 1700 }, info: "Traditional deep and woody pure oud oil.", projection: "2 Feet", longevity: "12+ Hours", stock: 6 },
+            { id: 17, cat: "attar", t: "Kasturi Musk", i: "https://images.unsplash.com/photo-1616984242997-d73bfdd27616?w=400", prices: { 6: 300, 10: 500, 15: 700, 30: 1300 }, info: "Traditional animalic and bold musk scent.", projection: "2 Feet", longevity: "10+ Hours", stock: 0 },
+            { id: 18, cat: "attar", t: "Mokhallat Premium", i: "https://images.unsplash.com/photo-1610461821210-9176317cc633?w=400", prices: { 6: 350, 10: 550, 15: 800, 30: 1500 }, info: "Beautiful mix of oud, rose, and spices.", projection: "2-3 Feet", longevity: "8-10 Hours", stock: 21 },
+            { id: 19, cat: "attar", t: "Sultan Al Oud", i: "https://images.unsplash.com/photo-1616984242997-d73bfdd27616?w=400", prices: { 6: 320, 10: 520, 15: 750, 30: 1400 }, info: "Soft and sweet woody oud profile.", projection: "2 Feet", longevity: "8+ Hours", stock: 16 },
+            { id: 20, cat: "watch", t: "Poedagar 613 Gold", p: 1850, i: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400", notes: "Premium Gold Watch", stock: 0 },
+            { id: 21, cat: "watch", t: "Black Classic Elite", p: 1200, i: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=400", notes: "Executive Black", stock: 8 },
+            { id: 22, cat: "watch", t: "Silver Sport Pro", p: 1400, i: "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=400", notes: "Sporty Style", stock: 14 },
+            { id: 23, cat: "watch", t: "Minimalist White", p: 950, i: "https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=400", notes: "Daily Elegant", stock: 30 },
+            { id: 24, cat: "watch", t: "Smart X-1 Gen", p: 2500, i: "https://images.unsplash.com/photo-1508685096489-7aac29625b3b?w=400", notes: "Fitness Tracker", stock: 5 },
+            { id: 25, cat: "sunglass", t: "Aviator Classic UV", p: 850, i: "https://images.unsplash.com/photo-1511499767390-a7335958beab?w=400", notes: "Timeless Aviator", stock: 20 },
+            { id: 26, cat: "sunglass", t: "Wayfarer Black", p: 650, i: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400", notes: "Casual Wear", stock: 12 },
+            { id: 27, cat: "sunglass", t: "Gold Rimmed Luxury", p: 1100, i: "https://images.unsplash.com/photo-1625591339762-426a30f149ec?w=400", notes: "Luxury Gold Rim", stock: 9 },
+            { id: 28, cat: "sunglass", t: "Club Master Retro", p: 780, i: "https://images.unsplash.com/photo-1577803645773-f96470509666?w=400", notes: "Vintage Style", stock: 17 },
+            { id: 29, cat: "wallet", t: "Genuine Leather Brown", p: 1150, i: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400", notes: "100% Leather", stock: 25 },
+            { id: 30, cat: "wallet", t: "RFID Card Holder", p: 450, i: "https://images.unsplash.com/photo-1606503176903-d67b86847d63?w=400", notes: "RFID Protected", stock: 35 },
+            { id: 31, cat: "wallet", t: "Bifold Black Executive", p: 900, i: "https://images.unsplash.com/photo-1559239111-073100650771?w=400", notes: "Classic Bifold", stock: 4 },
+            { id: 32, cat: "unisex", t: "Baccarat Rouge 540", p: 850, i: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400", notes: "Saffron, Jasmine", stock: 13 },
+            { id: 33, cat: "unisex", t: "Ombre Leather", p: 800, i: "https://images.unsplash.com/photo-1557170334-a9632e77c6e4?w=400", notes: "Pure Leather", stock: 18 },
+            { id: 34, cat: "combo", t: "Royal Gift Box", p: 2500, i: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400", notes: "3 Premium Perfumes", stock: 6 }
+        ];
+
+        let cart = [];
+        let currentSelectedML = {}; 
+        let currentViewedId = null;
+
+        function showLoading(callback) {
+            const loader = document.getElementById('globalLoader');
+            loader.style.display = 'flex';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                if(callback) callback();
+            }, 1000); 
+        }
+
+        function showSuccessPopup() {
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 2200);
+        }
+
+        function showOutOfStockToast() {
+            const toast = document.getElementById('outOfStockToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('menuOverlay');
+            menu.classList.toggle('active');
+            overlay.style.display = menu.classList.contains('active') ? 'block' : 'none';
+        }
+
+        function toggleCart() { 
+            document.getElementById('cartSidebar').classList.toggle('active'); 
+        }
+
+        function renderProducts(data) {
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = data.map(p => {
+                const isOutOfStock = p.stock === 0;
+                let stockBadge = isOutOfStock ? `<div class="stock-badge out-of-stock">Out of Stock</div>` : '';
+                return `
+                    <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}">
+                        <img src="${p.i}" loading="lazy" onclick="${isOutOfStock ? 'showOutOfStockToast()' : `viewDetails(${p.id})`}">
+                        ${stockBadge}
+                        <div style="padding:10px; text-align:center;">
+                            <h3 style="font-size:0.7rem; height:32px; overflow:hidden;">${p.t}</h3>
+                            ${p.p ? `<p style="color:var(--brand-gold); font-weight:bold; margin:5px 0;">৳ ${p.p}</p>` : ''}
+                            <button class="btn-style btn-buy" onclick="${isOutOfStock ? 'showOutOfStockToast()' : `viewDetails(${p.id})`}" ${isOutOfStock ? 'disabled' : ''}>DETAILS</button>
+                            <button class="btn-style btn-cart" onclick="${isOutOfStock ? 'showOutOfStockToast()' : `addDirectToCart(${p.id})`}" ${isOutOfStock ? 'disabled' : ''}>ADD TO BAG</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addDirectToCart(id) {
+            const p = products.find(x => x.id === id);
+            if (p.stock === 0) { showOutOfStockToast(); return; }
+            showLoading(() => {
+                let name = p.t;
+                let price = p.p || (p.prices ? p.prices[6] : 0);
+                if (p.prices) name += ' (6ml)';
+                let existing = cart.find(item => item.name === name && item.id === id);
+                if (existing) existing.qty += 1;
+                else cart.push({id, name, price, img: p.i, qty: 1});
+                saveCart();
+                updateCartUI();
+                showSuccessPopup();
+            });
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartItemsList');
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('cartCountBadge').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+            list.innerHTML = cart.length === 0 ? '<p style="text-align:center; color:#555; margin-top:20px;">Bag is empty</p>' : 
+            cart.map((item, index) => `
+                <div class="cart-item">
+                    <img src="${item.img}" style="width:50px; height:50px; object-fit:cover; border-radius:5px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:0.75rem;">${item.name}</div>
+                        <div style="color:var(--brand-gold)">৳ ${item.price * item.qty}</div>
+                    </div>
+                    <div class="cart-qty-controls">
+                        <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                    <i class="fa-solid fa-trash remove-btn" onclick="removeFromCart(${index})"></i>
+                </div>
+            `).join('');
+            document.getElementById('finalTotal').innerText = "৳ " + subtotal;
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty = Math.max(1, cart[index].qty + delta);
+            saveCart();
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartUI();
+        }
+
+        function viewDetails(id) {
+            showLoading(() => {
+                const p = products.find(x => x.id === id);
+                currentViewedId = id;
+                document.getElementById('luxMTitle').innerText = p.t;
+                document.getElementById('luxMImg').src = p.i;
+                document.getElementById('luxMNotes').innerText = p.info || p.notes || "Premium Collection";
+
+                if (p.prices) {
+                    document.getElementById('luxMProjection').innerText = p.projection || "N/A";
+                    document.getElementById('luxMLongevity').innerText = p.longevity || "N/A";
+                    const selector = document.getElementById('mlSelector');
+                    selector.innerHTML = '';
+                    Object.keys(p.prices).forEach(ml => {
+                        const btn = document.createElement('div');
+                        btn.className = 'ml-btn';
+                        btn.innerText = ml + 'ml';
+                        btn.dataset.ml = ml;
+                        btn.onclick = () => selectML(id, ml, p.prices[ml]);
+                        selector.appendChild(btn);
+                    });
+                    const firstML = Object.keys(p.prices)[0];
+                    selectML(id, firstML, p.prices[firstML]);
+                } else {
+                    document.getElementById('luxMPrice').innerText = "৳ " + (p.p || "N/A");
+                    document.getElementById('mlSelector').innerHTML = '';
+                    document.getElementById('luxMProjection').innerText = "N/A";
+                    document.getElementById('luxMLongevity').innerText = "N/A";
+                }
+
+                document.getElementById('luxProductModal').style.display = 'flex';
+                setTimeout(() => document.getElementById('luxProductModal').classList.add('show'), 50);
+            });
+        }
+
+        function selectML(productId, ml, price) {
+            currentSelectedML[productId] = {ml, price};
+            document.querySelectorAll('#mlSelector .ml-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.ml === ml));
+            document.getElementById('luxMPrice').innerText = "৳ " + price;
+        }
+
+        function closeLuxModal() { 
+            document.getElementById('luxProductModal').classList.remove('show');
+            setTimeout(() => document.getElementById('luxProductModal').style.display = 'none', 400);
+        }
+
+        function addFromModal() {
+            if (!currentViewedId) return;
+            const p = products.find(x => x.id === currentViewedId);
+            let name = p.t;
+            let price = p.p || 0;
+            if (p.prices && currentSelectedML[currentViewedId]) {
+                const sel = currentSelectedML[currentViewedId];
+                price = sel.price;
+                name += ` (${sel.ml}ml)`;
+            }
+            showLoading(() => {
+                let existing = cart.find(item => item.name === name);
+                if (existing) existing.qty += 1;
+                else cart.push({id: currentViewedId, name, price, img: p.i, qty: 1});
+                saveCart();
+                updateCartUI();
+                closeLuxModal();
+                showSuccessPopup();
+            });
+        }
+
+        function saveCart() {
+            localStorage.setItem('signatureScentsCart', JSON.stringify(cart));
+        }
+
+        // ==================== SMART LOGIC: LOAD CART ====================
+        function initCart() {
+            // Jodi checkout theke fire ase, tahole cart clear korbe
+            if(localStorage.getItem('cart_cleared') === 'true') {
+                localStorage.removeItem('signatureScentsCart');
+                localStorage.removeItem('cart_cleared');
+                cart = [];
+            } else {
+                const saved = localStorage.getItem('signatureScentsCart');
+                cart = saved ? JSON.parse(saved) : [];
+            }
+            updateCartUI();
+        }
+
+        // ==================== BUY NOW ====================
+        function buyFromModalDirect() {
+            if (!currentViewedId) return;
+            const p = products.find(x => x.id === currentViewedId);
+            let name = p.t;
+            let price = p.p || (p.prices ? Object.values(p.prices)[0] : 0);
+            if (p.prices && currentSelectedML[currentViewedId]) {
+                const sel = currentSelectedML[currentViewedId];
+                price = sel.price;
+                name += ` (${sel.ml}ml)`;
+            }
+            const tempCart = [{ name, price, img: p.i, qty: 1 }];
+            localStorage.setItem('signatureScentsCart', JSON.stringify(tempCart));
+            localStorage.setItem('cart_cleared', 'true'); // Shop-e firle jeno 0 hoy
+            window.location.href = "checkout.html";
+        }
+
+        // ==================== CHECKOUT ====================
+        function goToCheckout() {
+            if (cart.length === 0) return alert("Your bag is empty!");
+            localStorage.setItem('signatureScentsCart', JSON.stringify(cart));
+            localStorage.setItem('cart_cleared', 'true'); // Flag set kora holo
+            window.location.href = "checkout.html";
+        }
+
+        function searchPerfume(val) {
+            const filtered = products.filter(p => p.t.toLowerCase().includes(val.toLowerCase()));
+            renderProducts(filtered);
+        }
+
+        function filterProducts(cat, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            if (cat === 'all') renderProducts(products);
+            else renderProducts(products.filter(p => p.cat === cat));
+        }
+
+        let slideIdx = 0; 
+        setInterval(() => { 
+            slideIdx = (slideIdx + 1) % 2; 
+            if(document.getElementById('textSlider')) document.getElementById('textSlider').style.transform = `translateX(-${slideIdx * 100}%)`; 
+        }, 3000);
+        
+        let heroIdx = 0; 
+        setInterval(() => { 
+            heroIdx = (heroIdx + 1) % 3; 
+            if(document.getElementById('heroSlider')) document.getElementById('heroSlider').style.transform = `translateX(-${heroIdx * 100}%)`; 
+        }, 4000);
+
+        window.onload = () => {
+            initCart();
+            renderProducts(products);
+        }; 
+    </script>
+</body>
+</html> 

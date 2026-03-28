@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Scent | Signature Scents BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #050505;
+            --brand-gold: #ffb400;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 180, 0, 0.15);
+            --track-gray: #333;
+            --whatsapp-green: #25D366;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-black); color: #fff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+
+        .page-title { 
+            font-size: 2rem; 
+            color: var(--brand-gold); 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 10px; 
+        }
+
+        .order-info { color: #888; font-size: 0.9rem; margin-bottom: 50px; }
+
+        /* --- Horizontal Track Design --- */
+        .track-wrapper {
+            background: var(--glass);
+            padding: 50px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Connecting Line */
+        .track-line {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--track-gray);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .track-progress {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            width: 0%; 
+            height: 2px;
+            background: var(--brand-gold);
+            z-index: 2;
+            transform: translateY(-50%);
+            transition: 1s ease;
+            box-shadow: 0 0 10px var(--brand-gold);
+        }
+
+        .track-step {
+            position: relative;
+            z-index: 3;
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: #111;
+            border: 2px solid var(--track-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #555;
+            transition: 0.4s;
+            margin-bottom: 15px;
+        }
+
+        .track-step.active .step-icon {
+            border-color: var(--brand-gold);
+            color: var(--brand-gold);
+            background: #000;
+            box-shadow: 0 0 15px rgba(255, 180, 0, 0.3);
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .track-step.active .step-label { color: #fff; }
+
+        /* --- Additional Features CSS --- */
+        #deliveryEstimate {
+            background: rgba(255, 180, 0, 0.1);
+            color: var(--brand-gold);
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: none;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            border: 1px dashed var(--brand-gold);
+        }
+
+        .support-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--whatsapp-green);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin: 20px auto;
+            max-width: 250px;
+            transition: 0.3s;
+        }
+
+        .support-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+
+        /* --- Input Box Design --- */
+        .search-box {
+            margin-bottom: 40px;
+            background: var(--glass);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .search-box input {
+            background: #111;
+            border: 1px solid #222;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: #fff;
+            width: 100%;
+            max-width: 300px;
+            outline: none;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .btn-track {
+            padding: 15px 40px;
+            background: var(--brand-gold);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-track:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 180, 0, 0.4); }
+
+        @media (max-width: 600px) {
+            .step-label { font-size: 0.6rem; }
+            .step-icon { width: 40px; height: 40px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="page-title" data-aos="fade-down">Track Order</h1>
+    <p class="order-info" data-aos="fade-down" data-aos-delay="100">Enter your Order ID or Phone Number</p>
+
+    <div class="search-box" data-aos="zoom-in">
+        <input type="text" id="orderInput" placeholder="Order ID or Mobile Number">
+        <br>
+        <button class="btn-track" onclick="trackOrder()">Track Now</button>
+    </div>
+
+    <div id="deliveryEstimate" data-aos="fade-in">
+        <i class="fa-solid fa-calendar-check"></i> Estimated Delivery: <span id="estDate">March 20, 2026</span>
+    </div>
+
+    <div class="track-wrapper" data-aos="fade-up">
+        <div class="track-line"></div>
+        <div class="track-progress" id="progressLine"></div>
+
+        <div class="track-step">
+            <div class="step-icon"><i class="fa-solid fa-receipt"></i></div>
+            <span class="step-label">Placed</span>
+        </div>
+
+        <div class="track-step">
+            <div class="step-icon"><i class="fa-solid fa-flask"></i></div>
+            <span class="step-label">Processing</span>
+        </div>
+
+        <div class="track-step">
+            <div class="step-icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <span class="step-label">Shipped</span>
+        </div>
+
+        <div class="track-step">
+            <div class="step-icon"><i class="fa-solid fa-box-open"></i></div>
+            <span class="step-label">Arrived</span>
+        </div>
+    </div>
+
+    <a href="https://wa.me/YOUR_NUMBER" id="supportBtn" class="support-btn">
+        <i class="fa-brands fa-whatsapp"></i> Need Help with Order?
+    </a>
+
+    <div style="margin-top: 50px;">
+        <p style="color: #444; font-size: 0.7rem; letter-spacing: 2px;">~ Your Aura , Our Signature ✨</p>
+        <div style="margin-top:20px; display:flex; gap:20px; justify-content:center; align-items:center;">
+            <a href="index.html" style="color: var(--brand-gold); text-decoration: none; font-size: 0.8rem; border-bottom: 1px solid;">Back to Shop</a>
+            <a href="custom-combo.html" style="color: #888; text-decoration: none; font-size: 0.8rem; border-bottom: 1px solid;">Custom Combo</a>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { db, ref, onValue } from './firebase-config.js';
+
+    function trackOrder() {
+        const input = document.getElementById('orderInput').value.trim();
+        const progressLine = document.getElementById('progressLine');
+        const steps = document.querySelectorAll('.track-step');
+        const estBox = document.getElementById('deliveryEstimate');
+        const supportBtn = document.getElementById('supportBtn');
+
+        if(!input) {
+            alert("Please enter Order ID or Phone Number");
+            return;
+        }
+
+        // Firebase reference
+        const ordersRef = ref(db, 'orders');
+
+        // Real-time data ana
+        onValue(ordersRef, (snapshot) => {
+            const allOrders = snapshot.val();
+            let foundOrder = null;
+
+            // Database theke input match kora (ID ba Phone)
+            if (allOrders) {
+                Object.keys(allOrders).forEach(key => {
+                    if (allOrders[key].id == input || allOrders[key].phone == input) {
+                        foundOrder = allOrders[key];
+                    }
+                });
+            }
+
+            if (foundOrder) {
+                // ১. স্ট্যাটাস অনুযায়ী নাম্বার বের করা
+                let statusNumber = 1; // Default Placed
+                if(foundOrder.status === "Processing") statusNumber = 2;
+                if(foundOrder.status === "Shipped") statusNumber = 3;
+                if(foundOrder.status === "Delivered") statusNumber = 4;
+
+                // ২. প্রগ্রেস বার অ্যানিমেশন (Design logic)
+                let widths = ["0%", "0%", "33%", "66%", "100%"];
+                progressLine.style.width = widths[statusNumber];
+
+                // ৩. আইকনগুলো হাইলাইট করা
+                steps.forEach((step, index) => {
+                    if (index < statusNumber) {
+                        step.classList.add('active');
+                    } else {
+                        step.classList.remove('active');
+                    }
+                });
+
+                // ৪. এস্টিমেটেড ডেট ও সাপোর্ট বাটন দেখানো
+                estBox.style.display = "inline-block";
+                document.getElementById('estDate').innerText = foundOrder.date || "Updating...";
+                supportBtn.style.display = "flex";
+                supportBtn.href = `https://wa.me/8801XXXXXXXXX?text=Hello! I need help with my Order ID: ${foundOrder.id}`;
+
+            } else {
+                alert("দুঃখিত! এই Order ID বা Number টি আমাদের রেকর্ডে নেই।");
+                estBox.style.display = "none";
+                supportBtn.style.display = "none";
+                progressLine.style.width = "0%";
+                steps.forEach(s => s.classList.remove('active'));
+            }
+        });
+    }
+
+    // Module use korle eta must!
+    window.trackOrder = trackOrder;
+</script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 1000, once: true });
+
+    function trackOrder() {
+        const input = document.getElementById('orderInput').value.trim();
+        const progressLine = document.getElementById('progressLine');
+        const steps = document.querySelectorAll('.track-step');
+        const estBox = document.getElementById('deliveryEstimate');
+        const supportBtn = document.getElementById('supportBtn');
+        
+        // ডেমো ডাটাবেস
+        const database = {
+            "01712345678": {status: 1, date: "March 18, 2026"}, 
+            "SSB101": {status: 2, date: "March 17, 2026"},      
+            "SSB102": {status: 3, date: "March 16, 2026"},      
+            "SSB103": {status: 4, date: "Delivered Today"},
+            "01912345678": {status: 3, date: "March 16, 2026"}        
+        };
+
+        if (database[input]) {
+            const order = database[input];
+            const status = order.status;
+            
+            // রিসেট
+            steps.forEach(step => step.classList.remove('active'));
+            
+            // ক্যালকুলেশন
+            let width = "0%";
+            if(status === 1) width = "0%";
+            if(status === 2) width = "33%";
+            if(status === 3) width = "66%";
+            if(status === 4) width = "80%"; 
+
+            progressLine.style.width = width;
+            
+            for (let i = 0; i < status; i++) {
+                steps[i].classList.add('active');
+            }
+
+            // Show additional info
+            estBox.style.display = "inline-block";
+            document.getElementById('estDate').innerText = order.date;
+            supportBtn.style.display = "flex";
+            
+            // Update WhatsApp Link with Order ID
+            supportBtn.href = `https://wa.me/8801XXXXXXXXX?text=Hello! I need help with my Order ID: ${input}`;
+
+        } else {
+            alert("দুঃখিত! এই Order ID বা Number টি আমাদের রেকর্ডে নেই।");
+            estBox.style.display = "none";
+            supportBtn.style.display = "none";
+        }
+    }
+</script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 1000, once: true });
+
+    function trackOrder() {
+        const input = document.getElementById('orderInput').value.trim();
+        const progressLine = document.getElementById('progressLine');
+        const steps = document.querySelectorAll('.track-step');
+        const estBox = document.getElementById('deliveryEstimate');
+        const estDateSpan = document.getElementById('estDate');
+        const supportBtn = document.getElementById('supportBtn');
+        
+        // --- ADDMED LOGIC: LocalStorage theke real data ana ---
+        const allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+        
+        // Order ID ba Phone diye khuje ber kora
+        const foundOrder = allOrders.find(o => o.id == input || o.phone == input);
+
+        if (foundOrder) {
+            // Status-ke number-e convert kora logic
+            // Pending=1, Processing=2, Shipped=3, Delivered=4
+            let statusNumber = 1;
+            if(foundOrder.status === "Processing") statusNumber = 2;
+            if(foundOrder.status === "Shipped") statusNumber = 3;
+            if(foundOrder.status === "Delivered") statusNumber = 4;
+
+            // ১. প্রগ্রেস লাইন আপডেট (Design change na kore)
+            let width = "0%";
+            if(statusNumber === 1) width = "0%";
+            if(statusNumber === 2) width = "33%";
+            if(statusNumber === 3) width = "66%";
+            if(statusNumber === 4) width = "100%"; // Delivered hole full logic
+
+            progressLine.style.width = width;
+            
+            // ২. স্টেপগুলো একটিভ করা
+            steps.forEach(step => step.classList.remove('active'));
+            for (let i = 0; i < statusNumber; i++) {
+                if(steps[i]) steps[i].classList.add('active');
+            }
+
+            // ৩. এস্টিমেটেড ডেট এবং সাপোর্ট বাটন দেখানো
+            estBox.style.display = "inline-block";
+            // Jodi order date thake tobe sheta dekhabe, na thakle default
+            estDateSpan.innerText = foundOrder.date || "Updating Soon...";
+            
+            supportBtn.style.display = "flex";
+            supportBtn.href = `https://wa.me/8801XXXXXXXXX?text=Hello! I need help with my Order ID: ${foundOrder.id}`;
+
+        } else {
+            // ৪. ডাটা না পাওয়া গেলে
+            alert("দুঃখিত! এই Order ID বা Number টি আমাদের রেকর্ডে নেই।");
+            estBox.style.display = "none";
+            supportBtn.style.display = "none";
+            progressLine.style.width = "0%";
+            steps.forEach(step => step.classList.remove('active'));
+        }
+    }
+</script>
+
+</body>
+</html>
