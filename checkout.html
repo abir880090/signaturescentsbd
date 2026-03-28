@@ -156,7 +156,7 @@
     <script type="module">
         import { db, ref, push } from './firebase-config.js';
 
-        // ১. আপনার টেলিগ্রাম ডাটা
+        // ১. আপনার টেলিগ্রাম ডাটা (এগুলো একদম ঠিক আছে)
         const botToken = "8685578124:AAGBZ8qY5GfLtAL3BsrtDYMGFaO_7LUVdv8"; 
         const chatId = "7767394170";
 
@@ -164,7 +164,7 @@
         async function sendTelegramNotification(orderData) {
             const productList = orderData.items.map(item => `• ${item.name} (${item.qty} pcs)`).join('\n');
             const message = `
-🔔 *New Order from Signature Scents BD!*
+🔔 *New Order: Signature Scents BD*
 -------------------------
 👤 *Name:* ${orderData.customer}
 📞 *Phone:* ${orderData.phone}
@@ -174,9 +174,9 @@
 ${productList}
 🎁 *Gift Wrap:* ${orderData.gift}
 📝 *Note:* ${orderData.note || 'None'}
-✅ *Status:* Pending
--------------------------
-            `;
+🆔 *Order ID:* #${orderData.id}
+-------------------------`;
+
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
             try {
                 await fetch(url, {
@@ -184,7 +184,7 @@ ${productList}
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
                 });
-            } catch (e) { console.error("TG Error:", e); }
+            } catch (e) { console.error("TG Notification failed", e); }
         }
 
         // ৩. মেইন অর্ডার প্রসেসিং ফাংশন
@@ -195,6 +195,7 @@ ${productList}
             const isGiftChecked = document.getElementById('giftWrapCheck').checked;
             const note = document.getElementById('customerNote').value.trim();
 
+            // ভ্যালিডেশন
             if(!name) { showToast("Recipient Name is required"); return; }
             if(phone.length < 11 || !phone.startsWith("01")) { showToast("Enter a valid Mobile Number"); return; }
             if(address.length < 10) { showToast("Please provide a detailed Address"); return; }
@@ -220,38 +221,38 @@ ${productList}
                 date: new Date().toLocaleString()
             };
 
-            // Firebase-এ সেভ করা
             try {
+                // Firebase-এ ডাটা সেভ
                 await push(ref(db, 'orders'), orderData);
                 
-                // টেলিগ্রাম নোটিফিকেশন পাঠানো
+                // টেলিগ্রাম নোটিফিকেশন
                 await sendTelegramNotification(orderData);
 
-                // সাকসেস পপআপ
+                // সাকসেস এনিমেশন ও পপআপ
                 document.getElementById('popupOverlay').style.display = 'flex';
                 document.getElementById('loadingBox').style.display = 'none';
                 document.getElementById('successBox').style.display = 'block';
                 document.getElementById('orderIdDisplay').innerText = "#" + orderId;
 
-                // কার্ট খালি করা
+                // কার্ট ক্লিয়ার করা
                 localStorage.removeItem('signatureScentsCart');
 
             } catch (err) {
-                alert("Error: " + err.message);
+                alert("Order failed! Please check connection: " + err.message);
                 btn.classList.remove('loading');
                 btn.disabled = false;
             }
         };
 
         window.copyAndRedirect = function() {
-            const id = document.getElementById('orderIdDisplay').innerText;
-            navigator.clipboard.writeText(id);
+            const idFull = document.getElementById('orderIdDisplay').innerText;
+            navigator.clipboard.writeText(idFull);
             window.location.href = "index.html"; 
         };
     </script>
 
     <script>
-        // সাধারণ UI লজিক (Timer, Price calculation)
+        // UI কন্ট্রোল ফাংশনগুলো
         let subtotal = 0; 
         let deliveryCharge = 60;
         let giftCharge = 50;
@@ -277,24 +278,25 @@ ${productList}
         setInterval(() => {
             let mins = Math.floor(timeLeft / 60);
             let secs = timeLeft % 60;
-            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            const timerEl = document.getElementById('timer');
+            if(timerEl) timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             if(timeLeft > 0) timeLeft--;
         }, 1000);
 
-        window.showToast = function(msg) {
+        function showToast(msg) {
             const toast = document.getElementById('premiumToast');
             document.getElementById('toastMsg').innerText = msg;
             toast.style.display = 'flex';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        window.toggleNote = function() {
+        function toggleNote() {
             const isChecked = document.getElementById('giftWrapCheck').checked;
             document.getElementById('noteContainer').style.display = isChecked ? 'block' : 'none';
             updateSummary();
         }
 
-        window.selectDelivery = function(charge, el, days) {
+        function selectDelivery(charge, el, days) {
             deliveryCharge = charge;
             document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
