@@ -3,147 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Signature Scents BD</title>
+    <title>Master Admin | Signature Scents BD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    
     <style>
-        :root { --bg: #000; --gold: #ffb400; --surface: #0d0d0d; --border: #222; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 25px; }
-        header h1 { color: var(--gold); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Stats Section */
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 25px; }
-        .stat-card { background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-        .stat-card h3 { color: var(--gold); margin: 5px 0; font-size: 1.4rem; }
-        .stat-card p { font-size: 0.75rem; color: #888; text-transform: uppercase; }
-
-        /* Order Table */
-        .order-list { background: var(--surface); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .table-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; padding: 12px; font-size: 0.75rem; color: #555; text-transform: uppercase; }
-        td { padding: 15px 12px; border-bottom: 1px solid #111; font-size: 0.9rem; }
-
-        /* Controls */
-        select { background: #000; color: var(--gold); border: 1px solid var(--gold); padding: 6px; border-radius: 6px; cursor: pointer; }
-        .btn-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 1rem; }
+        :root { --bg: #050505; --gold: #ffb400; --card: #111; --border: rgba(255,180,0,0.2); }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
         
-        /* Responsive */
-        @media (max-width: 600px) { td { font-size: 0.8rem; } }
+        /* Stats Styles */
+        .stats { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-box { flex: 1; background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
+        .stat-box h2 { color: var(--gold); margin: 5px 0; }
+
+        /* Product Add Form */
+        .admin-section { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 30px; }
+        .section-title { color: var(--gold); margin-bottom: 15px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 15px; }
+        input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin-top: 5px; }
+
+        /* Order Card */
+        .order-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .status-select { width: auto; padding: 5px; font-size: 0.8rem; background: var(--gold); color: #000; font-weight: bold; }
+        
+        .btn-gold { background: var(--gold); color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        .product-item { font-size: 0.85rem; border-bottom: 1px solid #222; padding: 5px 0; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Signature Scents BD Admin</h1>
-        </header>
+    <h1 style="color:var(--gold); text-align:center;">SIGNATURE SCENTS ADMIN</h1>
 
-        <div class="stats">
-            <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
-            <div class="stat-card"><h3 id="pendingOrders">0</h3><p>Pending</p></div>
-            <div class="stat-card"><h3 id="totalRevenue">৳0</h3><p>Revenue</p></div>
-        </div>
+    <div class="stats">
+        <div class="stat-box"><span>Total Orders</span><h2 id="totalOrders">0</h2></div>
+        <div class="stat-box"><span>Pending Orders</span><h2 id="pendingOrders">0</h2></div>
+    </div>
 
-        <div class="order-list">
-            <div class="table-header">
-                <h2 style="font-size: 1rem; color: #eee;">Active Orders</h2>
-                <button onclick="fetchOrders()" style="background:none; border:none; color:var(--gold); cursor:pointer;"><i class="fa-solid fa-sync"></i> Refresh</button>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Status</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orderBody">
-                        </tbody>
-                </table>
-            </div>
+    <div class="admin-section">
+        <div class="section-title"><i class="fa-solid fa-plus-circle"></i> Add New Product</div>
+        <div class="form-group">
+            <input type="text" id="pName" placeholder="Product Name (e.g. Dior Sauvage)">
+            <input type="number" id="pPrice" placeholder="Price (TK)">
+            <input type="text" id="pImage" placeholder="Image Link (URL)">
+            <select id="pCategory">
+                <option value="Premium">Premium</option>
+                <option value="Budget">Budget</option>
+                <option value="Signature">Signature</option>
+            </select>
+            <button class="btn-gold" style="margin-top:10px;" onclick="addProduct()">Save Product</button>
         </div>
     </div>
 
-    <script>
-        // --- ৩. Firebase Configuration ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyAf1OrMuwbGJRDByY8LFi1fwlXZsfawwRI",
-            databaseURL: "https://signature-scents-bd-fa4f9-default-rtdb.firebaseio.com",
-            projectId: "signature-scents-bd-fa4f9",
-            storageBucket: "signature-scents-bd-fa4f9.firebasestorage.app",
-            appId: "1:690465209021:web:a5bbde32d6360aeed515d4"
-        }; 
+    <div class="admin-section">
+        <div class="section-title"><i class="fa-solid fa-truck-ramp-box"></i> Manage Orders</div>
+        <div id="orderList">Loading orders...</div>
+    </div>
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    <script type="module">
+        import { db, ref, push, onValue, update, remove } from './firebase-config.js';
 
-        // Orders Fetch করার ফাংশন
-        function fetchOrders() {
-            db.ref('orders').on('value', (snapshot) => {
-                const orders = snapshot.val();
-                const orderBody = document.getElementById('orderBody');
-                orderBody.innerHTML = "";
+        // --- Order Logic ---
+        onValue(ref(db, 'orders'), (snapshot) => {
+            const list = document.getElementById('orderList');
+            list.innerHTML = '';
+            let total = 0, pending = 0;
+            
+            const data = snapshot.val();
+            if(!data) { list.innerHTML = "No orders yet."; return; }
+
+            Object.entries(data).reverse().forEach(([key, order]) => {
+                total++;
+                if(order.status === "Pending") pending++;
+
+                const pItems = order.items.map(i => `<div class="product-item">${i.name} x ${i.qty} <span>TK ${i.price * i.qty}</span></div>`).join('');
                 
-                let count = 0, pending = 0, revenue = 0;
-
-                if (orders) {
-                    Object.keys(orders).reverse().forEach(key => {
-                        const order = orders[key];
-                        count++;
-                        if(order.status === "Pending") pending++;
-                        if(order.status === "Delivered") revenue += (order.total || 0);
-
-                        orderBody.innerHTML += `
-                            <tr>
-                                <td>#${order.id}</td>
-                                <td><b>${order.customer}</b><br><small>${order.phone}</small></td>
-                                <td>
-                                    <select onchange="updateStatus('${key}', this.value)">
-                                        <option value="Pending" ${order.status==='Pending'?'selected':''}>Pending</option>
-                                        <option value="Processing" ${order.status==='Processing'?'selected':''}>Processing</option>
-                                        <option value="Shipped" ${order.status==='Shipped'?'selected':''}>Shipped</option>
-                                        <option value="Delivered" ${order.status==='Delivered'?'selected':''}>Delivered</option>
-                                    </select>
-                                </td>
-                                <td>৳${order.total}</td>
-                                <td><button class="btn-del" onclick="deleteOrder('${key}')"><i class="fa-solid fa-trash"></i></button></td>
-                            </tr>
-                        `;
-                    });
-                }
-                document.getElementById('totalOrders').innerText = count;
-                document.getElementById('pendingOrders').innerText = pending;
-                document.getElementById('totalRevenue').innerText = '৳' + revenue;
+                list.innerHTML += `
+                    <div class="order-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="color:var(--gold)">#${order.id}</strong>
+                            <select class="status-select" onchange="updateStatus('${key}', this.value)">
+                                <option value="Pending" ${order.status=='Pending'?'selected':''}>Pending</option>
+                                <option value="Delivered" ${order.status=='Delivered'?'selected':''}>Delivered</option>
+                                <option value="Cancelled" ${order.status=='Cancelled'?'selected':''}>Cancelled</option>
+                            </select>
+                        </div>
+                        <p style="font-size:0.9rem; margin:10px 0;">
+                            <b>User:</b> ${order.customer} (${order.phone})<br>
+                            <b>Addr:</b> ${order.address}
+                        </p>
+                        <div style="background:#000; padding:8px; border-radius:5px;">${pItems}</div>
+                        <p style="text-align:right; font-weight:bold; color:var(--gold);">Total: ${order.total} TK</p>
+                        <button onclick="deleteOrder('${key}')" style="background:red; color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.7rem;">Delete Order</button>
+                    </div>
+                `;
             });
-        }
+            document.getElementById('totalOrders').innerText = total;
+            document.getElementById('pendingOrders').innerText = pending;
+        });
 
-        // Status Update করার ফাংশন (Database-e change hobe)
-        function updateStatus(key, newStatus) {
-            db.ref('orders/' + key).update({
-                status: newStatus
-            }).then(() => {
-                console.log("Status Updated Online!");
-            });
-        }
+        // --- Add Product Logic ---
+        window.addProduct = async () => {
+            const name = document.getElementById('pName').value;
+            const price = document.getElementById('pPrice').value;
+            const img = document.getElementById('pImage').value;
+            const cat = document.getElementById('pCategory').value;
 
-        // Order Delete করার ফাংশন
-        function deleteOrder(key) {
-            if(confirm("Are you sure?")) {
-                db.ref('orders/' + key).remove();
-            }
-        }
+            if(!name || !price) return alert("Fill details!");
 
-        window.onload = fetchOrders;
+            await push(ref(db, 'products'), { name, price, img, cat });
+            alert("Product Added Successfully!");
+            location.reload();
+        };
+
+        // --- Status Update & Delete ---
+        window.updateStatus = async (key, newStatus) => {
+            await update(ref(db, `orders/${key}`), { status: newStatus });
+        };
+
+        window.deleteOrder = async (key) => {
+            if(confirm("Sure to delete?")) await remove(ref(db, `orders/${key}`));
+        };
     </script>
 </body>
 </html>
